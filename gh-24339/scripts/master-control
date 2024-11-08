@@ -1,0 +1,39 @@
+docker compose up -d
+
+echo " - - - - "
+echo "waiting for region1.dc1.client-1 to start"
+echo " - - - - "
+
+for x in $(seq 1 10)
+do
+ docker ps | grep "healthy.*region1.dc1.client-1" && break
+ if test $x -eq 100
+ then 
+  echo " - - - - "
+  echo "startup issues exiting"
+  echo " - - - - "
+  ./scripts/cleanup
+  docker compose down
+  exit
+ fi
+
+ echo -ne "."
+ sleep 5
+done
+
+echo " - - - - "
+echo "region1.dc1.client-1 started check counts"
+echo " - - - - "
+
+./scripts/test-count
+
+echo " - - - - "
+echo "ending test"
+echo " - - - - "
+
+docker compose down
+
+./scripts/cleanup
+
+echo Fin.
+

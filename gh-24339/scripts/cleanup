@@ -1,0 +1,2 @@
+docker stop $(docker ps -q -f 'label=com.hashicorp.nomad.node_name=region1.dc1.client')
+docker rm $(docker ps -a -q -f 'label=com.hashicorp.nomad.node_name=region1.dc1.client')

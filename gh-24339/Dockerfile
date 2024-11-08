@@ -1,0 +1,17 @@
+FROM alpine
+ENV VNOMAD=1.9.1 VCONSUL=1.20.1 VCNI=1.6.0 GLIBC_VERSION=2.35-r1 ARCH=amd64
+RUN apk add curl unzip gcompat cgroup-tools && \
+  curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+  curl -Lo glibc.apk "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk" && \
+  curl -Lo glibc-bin.apk "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk" && \
+  apk add --force-overwrite glibc-bin.apk glibc.apk && \
+  /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
+    curl -L -o /tmp/nomad.zip https://releases.hashicorp.com/nomad/${VNOMAD}/nomad_${VNOMAD}_linux_${ARCH}.zip && unzip /tmp/nomad.zip nomad && chmod 755 nomad && \
+    mv nomad /usr/local/bin/ && \
+    curl -L -o /tmp/consul.zip https://releases.hashicorp.com/consul/${VCONSUL}/consul_${VCONSUL}_linux_${ARCH}.zip && unzip /tmp/consul.zip consul && chmod 755 consul && \
+    mv consul /usr/local/bin/ && \
+    mkdir -p /opt/cni/bin && \
+    curl -L -o /tmp/cni.tgz https://github.com/containernetworking/plugins/releases/download/v${VCNI}/cni-plugins-linux-${ARCH}-v${VCNI}.tgz && tar -zxf /tmp/cni.tgz -C /opt/cni/bin
+WORKDIR /
+
+

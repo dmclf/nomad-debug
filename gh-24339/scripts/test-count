@@ -1,0 +1,10 @@
+for i in $(seq 1 20);do 
+count=0
+count=$(($count+$(curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -v ^# | grep alloc|grep -c nomad_client_allocs_memory_usage)))
+
+echo "nomad_client_tasks_running: $(curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep ^nomad_client_tasks_running)"
+curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -v ^# | grep alloc|grep nomad_client_allocs_memory_usage
+
+echo "check $i :: counted: $count"; sleep 15; done
+
+
