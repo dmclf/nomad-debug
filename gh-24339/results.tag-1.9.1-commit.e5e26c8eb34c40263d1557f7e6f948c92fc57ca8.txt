@@ -1,0 +1,467 @@
+$ ./scripts/master-control 
+[+] Running 6/6
+ ✔ Network gh-24339_hashicorp                Created                                                                                                                              0.1s 
+ ✔ Container gh-24339-consulserver-1         Healthy                                                                                                                             18.0s 
+ ✔ Container gh-24339-region1.dc1.server3-1  Healthy                                                                                                                             32.5s 
+ ✔ Container gh-24339-region1.dc1.server-1   Healthy                                                                                                                             28.0s 
+ ✔ Container gh-24339-region1.dc1.server2-1  Healthy                                                                                                                             28.0s 
+ ✔ Container gh-24339-region1.dc1.client-1   Started                                                                                                                             32.9s 
+ - - - - 
+waiting for region1.dc1.client-1 to start
+ - - - - 
+.048babb6eedb   gh-24339-region1.dc1.client     "/scripts/nomad-init…"   38 seconds ago   Up 5 seconds (healthy)    127.0.0.1:4649->4649/tcp, 127.0.0.1:4653->4653/tcp, 127.0.0.1:4658->4658/tcp   gh-24339-region1.dc1.client-1
+ - - - - 
+region1.dc1.client-1 started check counts
+ - - - - 
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 0
+check 1 :: counted: 0
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 0
+check 2 :: counted: 0
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 3 :: counted: 16
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 4 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 5 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 6 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 7 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 8 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 9 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 10 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 11 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 12 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.698688e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 13 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 14 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 15 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 16 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 17 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 18 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 19 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="73fdaea2-17f7-9f1e-f2ed-aff7420b6488",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="0c7f9929-6bba-bddc-3e5d-9fdd93615abf",job="example-15",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="0cef86ca-e413-d871-ab18-c595a05cc21a",job="example-16",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="1c4cf155-090a-c520-5c8e-b3bc4a10acb4",job="example-20",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="34fe064b-b295-a045-ccf1-cd5c101ea553",job="example-5",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="394ed8fd-0d64-af7e-b2f7-8b4c830bdb65",job="example-13",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="3fcb02e7-81f2-2d6c-f89e-856d7e3eefdf",job="example-3",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="42642a03-e16a-59df-e98d-28bdb0d0378d",job="example-11",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="5057fadf-143a-6e66-14bf-067470ad427b",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="519003b1-b71a-b09e-5281-84b169e80c43",job="example-19",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="7165eb7f-efd8-0fdb-62ea-21cf02e7f134",job="example-2",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="8ecf8374-7353-f3b9-488f-96f48906e35d",job="example-6",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="932b46bb-4f6f-913c-e053-53862599ecfb",job="example-17",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="b14904ca-83ce-b320-65bf-69c0952123f5",job="example-14",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="bcadd415-7928-1a1a-d374-64bca698feed",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="c719dc8d-77b4-9b03-a946-6d528ed924dc",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ca82eb4f-abd1-9efa-cdb8-67cc401ab81c",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="d9b7bcf0-9fff-98a0-cdb1-5ac99639c956",job="example-10",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="ea34e64c-e5ba-a09c-e049-e0d3d130c9df",job="example-12",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f7f231eb-f009-bb99-3e05-01a0e3df0092",job="example-9",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="fc2ffffc-f284-fbb8-422b-3d3fddfb0ce7",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+check 20 :: counted: 20
+ - - - - 
+ending test
+ - - - - 
+[+] Running 6/6
+ ✔ Container gh-24339-region1.dc1.client-1   Removed                                                                                                                              0.2s 
+ ✔ Container gh-24339-region1.dc1.server-1   Removed                                                                                                                              0.4s 
+ ✔ Container gh-24339-region1.dc1.server2-1  Removed                                                                                                                              0.3s 
+ ✔ Container gh-24339-region1.dc1.server3-1  Removed                                                                                                                              0.4s 
+ ✔ Container gh-24339-consulserver-1         Removed                                                                                                                              0.2s 
+ ✔ Network gh-24339_hashicorp                Removed                                                                                                                              0.1s 
+65bcb0b0e8ad
+ad22cad265d4
+1b71786847d0
+0418fcbea139
+10c6ad22fe65
+75dc77fce5a4
+5a6cab511bc6
+1b5f3d7bd7af
+b1016c0447f9
+a3fb3ff1a503
+ad264ef86452
+7fbabcbd57fc
+cfc1263b1208
+ca4c8ba52000
+03c28e2011bc
+626e716d7ea4
+562d2bde91e8
+54d953135cb1
+58978d0208b5
+80dbc9ac7731
+65bcb0b0e8ad
+ad22cad265d4
+1b71786847d0
+0418fcbea139
+10c6ad22fe65
+75dc77fce5a4
+5a6cab511bc6
+1b5f3d7bd7af
+b1016c0447f9
+a3fb3ff1a503
+ad264ef86452
+7fbabcbd57fc
+cfc1263b1208
+ca4c8ba52000
+03c28e2011bc
+626e716d7ea4
+562d2bde91e8
+54d953135cb1
+58978d0208b5
+80dbc9ac7731
+Fin.
+
