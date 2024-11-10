@@ -1,0 +1,241 @@
+$ ./scripts/master-control 
+[+] Running 6/6
+ ✔ Network gh-24339_hashicorp                Created                                                                                                                              0.1s 
+ ✔ Container gh-24339-consulserver-1         Healthy                                                                                                                             12.4s 
+ ✔ Container gh-24339-region1.dc1.server-1   Healthy                                                                                                                             22.4s 
+ ✔ Container gh-24339-region1.dc1.server2-1  Healthy                                                                                                                             27.4s 
+ ✔ Container gh-24339-region1.dc1.server3-1  Healthy                                                                                                                             27.4s 
+ ✔ Container gh-24339-region1.dc1.client-1   Started                                                                                                                             27.9s 
+ - - - - 
+waiting for region1.dc1.client-1 to start
+ - - - - 
+..69d1c428e1f3   gh-24339-region1.dc1.client     "/scripts/nomad-init…"   38 seconds ago   Up 10 seconds (healthy)   127.0.0.1:4649->4649/tcp, 127.0.0.1:4653->4653/tcp, 127.0.0.1:4658->4658/tcp   gh-24339-region1.dc1.client-1
+ - - - - 
+region1.dc1.client-1 started check counts
+ - - - - 
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 0
+check 1 :: counted: 0
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 1
+check 2 :: counted: 0
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="08eca3c9-f2b6-e71d-7d89-ab3f80bce8cb",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="48cdead5-02b5-07d4-e044-5705dd8a0df4",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="5f2d5e38-88ad-0ed5-1dbe-ecb0d127c284",job="example-9",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="689814e2-31b9-c781-4e07-a418562aa1c6",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="6ed75afa-b03a-a2f3-e863-0dbed1c03cff",job="example-2",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="7828101e-0efd-9b75-c8fe-7fbc34ce3991",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="8a81f5ed-6dd6-8ec5-e059-cae9080cf383",job="example-6",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="aa6162f6-9fe9-2698-9833-fe701b21a1df",job="example-17",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f257c082-a269-a3e6-9243-ba20259b51af",job="example-13",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="fc4ffe40-4acb-15d2-c1e3-8700442a1246",job="example-3",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+check 3 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="initializing"} 0
+nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="08eca3c9-f2b6-e71d-7d89-ab3f80bce8cb",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="48cdead5-02b5-07d4-e044-5705dd8a0df4",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="5f2d5e38-88ad-0ed5-1dbe-ecb0d127c284",job="example-9",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="689814e2-31b9-c781-4e07-a418562aa1c6",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="6ed75afa-b03a-a2f3-e863-0dbed1c03cff",job="example-2",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="7828101e-0efd-9b75-c8fe-7fbc34ce3991",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="8a81f5ed-6dd6-8ec5-e059-cae9080cf383",job="example-6",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="aa6162f6-9fe9-2698-9833-fe701b21a1df",job="example-17",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f257c082-a269-a3e6-9243-ba20259b51af",job="example-13",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="fc4ffe40-4acb-15d2-c1e3-8700442a1246",job="example-3",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+check 4 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="08eca3c9-f2b6-e71d-7d89-ab3f80bce8cb",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="48cdead5-02b5-07d4-e044-5705dd8a0df4",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="5f2d5e38-88ad-0ed5-1dbe-ecb0d127c284",job="example-9",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="689814e2-31b9-c781-4e07-a418562aa1c6",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="6ed75afa-b03a-a2f3-e863-0dbed1c03cff",job="example-2",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="7828101e-0efd-9b75-c8fe-7fbc34ce3991",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="8a81f5ed-6dd6-8ec5-e059-cae9080cf383",job="example-6",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="aa6162f6-9fe9-2698-9833-fe701b21a1df",job="example-17",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f257c082-a269-a3e6-9243-ba20259b51af",job="example-13",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="fc4ffe40-4acb-15d2-c1e3-8700442a1246",job="example-3",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+check 5 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="08eca3c9-f2b6-e71d-7d89-ab3f80bce8cb",job="example-4",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 3.416064e+06
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 3.436544e+06
+nomad_client_allocs_memory_usage{alloc_id="48cdead5-02b5-07d4-e044-5705dd8a0df4",job="example-18",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="5f2d5e38-88ad-0ed5-1dbe-ecb0d127c284",job="example-9",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="689814e2-31b9-c781-4e07-a418562aa1c6",job="example-1",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="6ed75afa-b03a-a2f3-e863-0dbed1c03cff",job="example-2",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="7828101e-0efd-9b75-c8fe-7fbc34ce3991",job="example-8",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="8a81f5ed-6dd6-8ec5-e059-cae9080cf383",job="example-6",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="aa6162f6-9fe9-2698-9833-fe701b21a1df",job="example-17",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 3.424256e+06
+nomad_client_allocs_memory_usage{alloc_id="f257c082-a269-a3e6-9243-ba20259b51af",job="example-13",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 3.428352e+06
+nomad_client_allocs_memory_usage{alloc_id="fc4ffe40-4acb-15d2-c1e3-8700442a1246",job="example-3",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+check 6 :: counted: 20
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 3.432448e+06
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="f257c082-a269-a3e6-9243-ba20259b51af",job="example-13",namespace="default",task="redis",task_group="cache"} 3.42016e+06
+check 7 :: counted: 6
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+check 8 :: counted: 4
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 0
+check 9 :: counted: 4
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="1281a581-d1ab-2913-e4eb-3d9dd40d7416",job="example-11",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="c774d71e-5442-a08f-e7c1-73a83454e3ea",job="example-16",namespace="default",task="redis",task_group="cache"} 0
+check 10 :: counted: 4
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 0
+check 11 :: counted: 1
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="1ba4cda4-9c48-b5f9-aae2-7d3d009d5ab4",job="example-19",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 0
+check 12 :: counted: 2
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 0
+check 13 :: counted: 3
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 0
+check 14 :: counted: 5
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="da7f38e2-446e-9b58-8074-fa86474027b6",job="example-14",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 0
+check 15 :: counted: 7
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="52f9f80e-3eed-60b1-47de-8cb70a09cb67",job="example-5",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="9f45fed5-4772-dd6a-e04e-080e123e6395",job="example-20",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 0
+check 16 :: counted: 6
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="05ad2a54-c837-972a-d8be-877c1016ad4a",job="example-10",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="faad3131-05e0-d414-f140-2911049b9814",job="example-7",namespace="default",task="redis",task_group="cache"} 0
+check 17 :: counted: 4
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="5d158064-8981-a6f9-eeef-9a7ac5b5eef8",job="example-12",namespace="default",task="redis",task_group="cache"} 0
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+check 18 :: counted: 2
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+check 19 :: counted: 1
+nomad_client_tasks_running: nomad_client_tasks_running{datacenter="dc1",node_class="none",node_id="a9a38038-f034-71bf-ddb9-9e643358b3b0",node_pool="default",node_scheduling_eligibility="eligible",node_status="ready"} 20
+nomad_client_allocs_memory_usage{alloc_id="d4703299-a394-cbcd-78a3-065b624f1fb0",job="example-15",namespace="default",task="redis",task_group="cache"} 0
+check 20 :: counted: 1
+ - - - - 
+ending test
+ - - - - 
+[+] Running 6/6
+ ✔ Container gh-24339-region1.dc1.client-1   Removed                                                                                                                              0.3s 
+ ✔ Container gh-24339-region1.dc1.server2-1  Removed                                                                                                                              0.4s 
+ ✔ Container gh-24339-region1.dc1.server3-1  Removed                                                                                                                              0.4s 
+ ✔ Container gh-24339-region1.dc1.server-1   Removed                                                                                                                              0.3s 
+ ✔ Container gh-24339-consulserver-1         Removed                                                                                                                              0.2s 
+ ✔ Network gh-24339_hashicorp                Removed                                                                                                                              0.1s 
+6c985b55ba46
+1d560fafdf37
+a845b41cfd8a
+ffbf5fbcf7d6
+44c3aea838bb
+16ada789e46a
+31594a62be2e
+886e0309b89d
+8180440143b6
+9aa04bfa43c4
+a321a08a65d1
+24137c2fb7be
+561a3d2c5954
+5c512bacacdb
+e38b37d97851
+84cfcd8d3fb5
+8aa0ec74bcd7
+1ff15c1a0365
+b7aa17f36132
+f47359c6ee24
+6c985b55ba46
+1d560fafdf37
+a845b41cfd8a
+ffbf5fbcf7d6
+44c3aea838bb
+16ada789e46a
+31594a62be2e
+886e0309b89d
+8180440143b6
+9aa04bfa43c4
+a321a08a65d1
+24137c2fb7be
+561a3d2c5954
+5c512bacacdb
+e38b37d97851
+84cfcd8d3fb5
+8aa0ec74bcd7
+1ff15c1a0365
+b7aa17f36132
+f47359c6ee24
+Fin.
+
