@@ -207,17 +207,15 @@ hostname | grep -q region1.dc1.client$ && client=1
 if test $client -eq 1;
 then
 sleep 10
-for job in $(seq 1 20)
-do
-cat << EOF > /tmp/test-job-${job}
+cat << EOF > /tmp/test-job
 #  from https://github.com/hashicorp/nomad/issues/24339
-job "example-${job}" {
+job "example-job" {
   group "cache" {
+    count = 20
     task "redis" {
       driver = "docker"
       config {
         image          = "redis:7"
-        # ports          = ["db"]
         auth_soft_fail = true
       }
 
@@ -228,15 +226,14 @@ job "example-${job}" {
 
       resources {
         cpu    = 100
-        memory = 128
+        memory = 64
       }
     }
   }
 }
 EOF
 
-nomad job run -detach /tmp/test-job-${job} &
-done
+nomad job run /tmp/test-job
 fi
 
 wait

@@ -20,7 +20,7 @@
 
 ## setup
 
-- Ubuntu (22.04) 
+- [Ubuntu (22.04)](https://releases.ubuntu.com/jammy/)
 - servers/masters -> Nomad + Consul + Unbound (service.consul) + Traefik + Keepalived (vm)
   - keepalived for centralized UI and APP differentation.
     - example 
@@ -47,34 +47,38 @@
 
 - infrastructure/devops system jobs
   - [cadvisor](https://github.com/google/cadvisor)
-  - plugin-nfs-nodes
-  - plugin-smb-nodes
-  - promtail
-  - vector
+  - [plugin-nfs-nodes](https://github.com/kubernetes-csi/csi-driver-nfs)
+  - [plugin-smb-nodes](https://github.com/kubernetes-csi/csi-driver-smb)
+  - [promtail](https://grafana.com/oss/promtail)
+  - [vector](https://github.com/vectordotdev/vector)
 - infrastructure/devops service jobs
-  - oauth2proxy
+  - [oauth2proxy](https://github.com/oauth2-proxy/oauth2-proxy)
   - custom traefik errorpage
-  - elastic logstash
-  - loki
-  - plugin-nfs-controller
-  - plugin-smb-controller
-  - nomad-autoscaler
-  - vault
+  - [elastic logstash](https://www.elastic.co/logstash)
+  - [loki](https://grafana.com/oss/loki/)
+  - [plugin-nfs-controller](https://github.com/kubernetes-csi/csi-driver-nfs)
+  - [plugin-smb-controller](https://github.com/kubernetes-csi/csi-driver-smb)
+  - [nomad-autoscaler](https://github.com/hashicorp/nomad-autoscaler)
+  - [vault](https://github.com/hashicorp/vault)
     - also used to template secrets, again, in above setup, job-specs can be same, and environment helps differentiate for production / staging / development (as vault's are environment-specific)
-  - grafana
-  - * netbox 
+    - kv
+    - totp
+    - ssh
+    - database
+  - [grafana](https://grafana.com/oss/grafana/)
+  - * [netbox](https://github.com/netbox-community/netbox)
     - API backend for prometheus configuration
-  - * Ubuntu mirror
+  - * [Ubuntu mirror]
   - * docker-registry-cache
   - * [devpi pypi.org caching](https://github.com/devpi/devpi)
   - monitoring stack
-    - alertmanager
-    - karma - unified alertmanager dashboard
-    - ms-teams handlers
-    - prometheus
-    - thanos
+    - [alertmanager](https://github.com/prometheus/alertmanager)
+    - [karma - unified alertmanager dashboard](https://github.com/prymitive/karma)
+    - [ms-teams handlers](https://github.com/prometheus-msteams/prometheus-msteams)
+    - [prometheus](https://github.com/prometheus/prometheus)
+    - [thanos](https://github.com/thanos-io/thanos)
     - exporters
-      - blackbox
+      - [blackbox](https://github.com/thanos-io/thanos)
         - SSH probing
         - VNC probing
         - Consul API critical/warning state 
@@ -83,14 +87,14 @@
         - URL monitoring
           - certificate expiry monitoring
         - DNS monitoring
-      - snmp-exporter
-      - postgres-exporter
-      - mysql-exporter
-      - clickhouse-exporter
-      - idrac-exporter 
-      - smokeping-prober
-      - solace-exporter
-      - vmware-exporter
-      - rundeck-exporter
-      - graphite-exporter
+      - [snmp-exporter](https://github.com/prometheus/snmp_exporter)
+      - [postgres-exporter](https://github.com/prometheus-community/postgres_exporter)
+      - [mysql-exporter](https://github.com/prometheus/mysqld_exporter)
+      - [clickhouse-exporter](https://clickhouse.com/docs/en/integrations/prometheus)
+      - [idrac-exporter](https://github.com/mrlhansen/idrac_exporter)
+      - [smokeping-prober](https://github.com/SuperQ/smokeping_prober)
+      - [solace-exporter](https://github.com/solacecommunity/solace-prometheus-exporter)
+      - [vmware-exporter](https://github.com/pryorda/vmware_exporter)
+      - [rundeck-exporter](https://github.com/phsmith/rundeck_exporter)
+      - [graphite-exporter](https://github.com/prometheus/graphite_exporter)
       - custom exporters
