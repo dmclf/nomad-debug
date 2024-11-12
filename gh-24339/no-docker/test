@@ -1,0 +1,62 @@
+echo "wait a bit before submitting job to allow nomad to settle"
+sleep 60
+
+cat << EOF > /tmp/test-job
+#  from https://github.com/hashicorp/nomad/issues/24339
+job "example-job" {
+  group "cache" {
+    count = 20
+    ephemeral_disk {
+      size    = 10
+    }
+
+    task "redis" {
+      driver = "docker"
+      config {
+        image          = "redis:7"
+        auth_soft_fail = true
+      }
+
+      logs {
+        max_files = 3
+        max_file_size = 3
+      }
+
+      identity {
+        env  = true
+        file = true
+      }
+
+      resources {
+        cpu    = 100
+        memory = 64
+      }
+    }
+  }
+}
+EOF
+
+nomad job run /tmp/test-job
+
+
+localip="${1:-127.0.0.1}"
+localport="${2:-4000}"
+
+while true;
+do
+
+nomad_client_tasks_running=$(curl "http://${localip}:${localport}/v1/metrics?format=prometheus" 2>/dev/null|grep ^nomad_client_tasks_running|cut -f2 -d\} | awk '{print $1}')
+nomad_client_allocs_memory_usage_count=$(curl "http://${localip}:${localport}/v1/metrics?format=prometheus" 2>/dev/null|grep -v ^# | grep alloc|grep nomad_client_allocs_memory_usage | wc -l )
+
+if test -z "$nomad_client_tasks_running"; then nomad_client_tasks_running=-1;fi
+if test -z "$nomad_client_allocs_memory_usage_count"; then nomad_client_allocs_memory_usage_count=-1;fi
+
+if test $nomad_client_tasks_running -eq $nomad_client_allocs_memory_usage_count
+then
+ echo "check $i :: ALL OK $nomad_client_tasks_running == $nomad_client_allocs_memory_usage_count"
+else
+ echo "check $i :: MISMATCH $nomad_client_tasks_running != $nomad_client_allocs_memory_usage_count"
+fi
+
+sleep 5
+done

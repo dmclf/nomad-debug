@@ -1,0 +1,23 @@
+#!/bin/bash
+VNOMAD="${1:-1.9.3}"
+case `uname -m` in  
+	aarch64) ARCH=arm64;;
+	x86_64) ARCH=amd64;;
+esac
+
+if test ! -f nomad_${VNOMAD}_linux_${ARCH}.zip
+then
+curl -L -o nomad_${VNOMAD}_linux_${ARCH}.zip https://releases.hashicorp.com/nomad/${VNOMAD}/nomad_${VNOMAD}_linux_${ARCH}.zip
+fi
+unzip -o nomad_${VNOMAD}_linux_${ARCH}.zip nomad
+./nomad version  
+
+read -n1 -p "Proceed with test nomad ${VNOMAD} ${ARCH} ? (y = yes) " -r approval
+echo
+if [[ "$approval" =~ [Yy] ]]
+then 
+ echo OK
+ screen -c .screenrc
+else 
+ echo Abort Abort Abort Abort Abort
+fi

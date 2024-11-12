@@ -1,0 +1,4 @@
+screen -t consul 1 sudo consul agent -config-file=cfg/consul-server.hcl 
+screen -t server 2 sudo ./nomad agent -config=cfg/nomad-server.hcl -server
+screen -t client 3 sudo ./nomad agent -config=cfg/nomad-client.hcl -client
+screen -t stats  4 ./test
