@@ -185,22 +185,23 @@ ln -s  /opt/cni/bin/ /usr/libexec/cni
 fi
 
 /usr/local/bin/nomad agent -config /etc/nomad & 
-sleep 10
+sleep 5
 
 aclloop=0
 hostname | grep -q region1.dc1.server$ && aclloop=1
 
 if test $aclloop -eq 1;
 then
+while [ $aclloop -eq 1 ];do
 echo ${NOMAD_TOKEN} > token
 nomad acl bootstrap -tls-skip-verify token 2> /tmp/bootstrap 
-nomad acl policy apply -description "Anonymous policy" anonymous /tmp/anonymous.policy.hcl 2>/tmp/bootstrap.anon
-grep 'Bootstrap Token' /tmp/bootstrap && break
-grep 'Successfully wrote' /tmp/bootstrap.anon && break
+nomad acl policy list|grep -q anonymous || nomad acl policy apply -description "Anonymous policy" anonymous /tmp/anonymous.policy.hcl 2>/tmp/bootstrap.anon
+grep 'Bootstrap Token' /tmp/bootstrap && aclloop=0
+grep 'Successfully wrote' /tmp/bootstrap.anon && aclloop=0
+sleep 10
+done
+
 fi
-
-hostname | grep -q client && /usr/local/bin/dockerd &
-
 
 client=0
 hostname | grep -q region1.dc1.client$ && client=1
@@ -233,7 +234,7 @@ job "example-job" {
 }
 EOF
 
-nomad job run /tmp/test-job
+nomad job run -detach /tmp/test-job
 fi
 
 wait

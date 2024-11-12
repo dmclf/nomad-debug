@@ -1,6 +1,8 @@
 services:
   region1.dc1.server:
-    build: .
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
     entrypoint: ["/scripts/nomad-init.sh"]
     hostname: region1.dc1.server
     environment:
@@ -47,7 +49,9 @@ services:
 
 
   region1.dc1.server2:
-    build: .
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
     entrypoint: ["/scripts/nomad-init.sh"]
     hostname: region1.dc1.server2
     environment:
@@ -94,7 +98,9 @@ services:
         
 
   region1.dc1.server3:
-    build: .
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
     entrypoint: ["/scripts/nomad-init.sh"]
     hostname: region1.dc1.server3
     environment:
@@ -139,7 +145,9 @@ services:
         start_period: 2m
 
   region1.dc1.client:
-    build: .
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
     entrypoint: ["/scripts/nomad-init.sh"]
     hostname: region1.dc1.client
     environment:
@@ -197,7 +205,9 @@ services:
 
 #  region1.dc2.client:
 #    #image: nomadtest
-#    build: .
+#    build:
+#      context: docker-build-context
+#      dockerfile: Dockerfile
 #    entrypoint: ["/scripts/nomad-init.sh"]
 #    #entrypoint: ["/usr/local/bin/nomad","agent","-dev","-dev-connect","-dev-consul","-dev-vault","-dc=beta","-join=alpha"]
 #    hostname: region1.dc2.client
@@ -254,7 +264,9 @@ services:
 
 
   consulserver:
-    build: .
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
     entrypoint: ["/scripts/consul-init.sh"]
     hostname: consulserver
     environment:

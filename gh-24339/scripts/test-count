@@ -1,10 +1,23 @@
-for i in $(seq 1 20);do 
-count=0
-count=$(($count+$(curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -v ^# | grep alloc|grep -c nomad_client_allocs_memory_usage)))
+maxchecks=15
+for i in $(seq 1 ${maxchecks});do 
 
-echo "nomad_client_tasks_running: $(curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep ^nomad_client_tasks_running)"
-curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -v ^# | grep alloc|grep nomad_client_allocs_memory_usage
+curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -q -e "^nomad_client_tasks_running.*initializing" && echo "check ${i}/${maxchecks} :: nomad client initializing" && sleep 10 && continue
 
-echo "check $i :: counted: $count"; sleep 15; done
+nomad_client_tasks_running=$(curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -e "^nomad_client_tasks_running.*ready"|cut -f2 -d\} | awk '{print $1}')
+nomad_client_allocs_memory_usage_count=$(curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -v ^# | grep alloc|grep nomad_client_allocs_memory_usage | wc -l )
 
+if test -z "$nomad_client_tasks_running"; then nomad_client_tasks_running=-1;fi
+if test -z "$nomad_client_allocs_memory_usage_count"; then nomad_client_allocs_memory_usage_count=-1;fi
 
+if test $nomad_client_tasks_running -eq $nomad_client_allocs_memory_usage_count
+then
+ echo "check ${i}/${maxchecks} :: ALL OK $nomad_client_tasks_running == $nomad_client_allocs_memory_usage_count"
+else
+ echo "check ${i}/${maxchecks} :: MISMATCH $nomad_client_tasks_running != $nomad_client_allocs_memory_usage_count"
+ echo "check ${i}/${maxchecks} :: MISMATCH nomad_client_tasks_running:${nomad_client_tasks_running}:nomad_client_allocs_memory_usage_count:${nomad_client_allocs_memory_usage_count}:"
+ echo "nomad_client_tasks_running: $(curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep ^nomad_client_tasks_running )"
+ curl -k "https://localhost:4649/v1/metrics?format=prometheus" 2>/dev/null|grep -v ^# | grep alloc|grep nomad_client_allocs_memory_usage
+fi
+if test $i -eq ${maxchecks};then exit;fi
+sleep 15
+done
