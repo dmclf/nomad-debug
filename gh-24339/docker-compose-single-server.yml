@@ -1,0 +1,143 @@
+services:
+  region1.dc1.singleserver:
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
+    entrypoint: ["/scripts/nomad-init.sh"]
+    hostname: region1.dc1.server
+    environment:
+      NOMAD_ADDR: https://region1.dc1.server:4646
+      NOMAD_SKIP_VERIFY: 'true'
+      CONSUL_HTTP_SSL_VERIFY: 'true'
+      NOMAD_TOKEN: "00000000-1000-0000-0000-000000000000"
+      CONSUL_HTTP_TOKEN: "00000000-2000-0000-0000-000000000000"
+      CONSUL_HTTP_ADDR: https://consulserver:8501
+      CONSUL_CACERT: /scripts/tls/nomad-agent-ca.pem
+      CONSUL_CLIENT_CERT: /scripts/tls/global-server-nomad.pem
+      CONSUL_CLIENT_KEY: /scripts/tls/global-server-nomad-key.pem
+      NOMAD_CACERT: /scripts/tls/nomad-agent-ca.pem
+      NOMAD_CLIENT_CERT: /scripts/tls/global-server-nomad.pem
+      NOMAD_CLIENT_KEY: /scripts/tls/global-server-nomad-key.pem
+      CNI_NETNS: /opt/cni/bin
+      NOMAD_HTTP: 4646
+      NOMAD_RPC: 4650
+      NOMAD_SERF: 4655
+    privileged: true
+    depends_on:
+      consulserver:
+        condition: service_healthy
+    networks:
+    - hashicorp
+    ports:
+    - 127.0.0.1:4646:4646/tcp
+    - 127.0.0.1:4650:4650/tcp
+    - 127.0.0.1:4655:4655/tcp
+    tmpfs:
+      - /local
+    restart: always
+    init: true
+    volumes:
+      - "/sys:/sys"
+      - "./scripts:/scripts"
+    healthcheck:
+        test: ["CMD", "/bin/sh","-c","nomad server  members|grep 'alive.*true' ||false"]
+        interval: 1m30s
+        timeout: 10s
+        retries: 3
+        start_period: 2m
+        
+  region1.dc1.client:
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
+    entrypoint: ["/scripts/nomad-init.sh"]
+    hostname: region1.dc1.client
+    environment:
+      NOMAD_ADDR: https://region1.dc1.server:4646
+      NOMAD_SKIP_VERIFY: 'true'
+      CONSUL_HTTP_SSL_VERIFY: 'true'
+      NOMAD_TOKEN: "00000000-1000-0000-0000-000000000000"
+      CONSUL_HTTP_TOKEN: "00000000-2000-0000-0000-000000000000"
+      CONSUL_HTTP_ADDR: https://consulserver:8501
+      CONSUL_CACERT: /scripts/tls/nomad-agent-ca.pem
+      CONSUL_CLIENT_CERT: /scripts/tls/global-server-nomad.pem
+      CONSUL_CLIENT_KEY: /scripts/tls/global-server-nomad-key.pem
+      NOMAD_CACERT: /scripts/tls/nomad-agent-ca.pem
+      NOMAD_CLIENT_CERT: /scripts/tls/global-server-nomad.pem
+      NOMAD_CLIENT_KEY: /scripts/tls/global-server-nomad-key.pem
+      CNI_NETNS: /opt/cni/bin
+      NOMAD_HTTP: 4649
+      NOMAD_RPC: 4653
+      NOMAD_SERF: 4658
+    privileged: true
+    ports:
+    - 127.0.0.1:4649:4649/tcp
+    - 127.0.0.1:4653:4653/tcp
+    - 127.0.0.1:4658:4658/tcp
+    depends_on:
+      consulserver:
+        condition: service_healthy
+      region1.dc1.singleserver:
+        condition: service_healthy
+    networks:
+    - hashicorp
+    tmpfs:
+      - /local
+    restart: always
+    init: true
+    volumes:
+      - "/sys:/sys"
+      - "/var/run/docker:/var/run/docker"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/run/docker.pid:/var/run/docker.pid"
+      - "/var/run/containerd:/var/run/containerd"
+      - "./scripts:/scripts"
+    healthcheck:
+        # test: ["CMD", "/bin/sh","-c","consul members|grep alive||false"]
+        test: ["CMD", "/bin/sh","-c","nomad server  members|grep 'alive.*true' ||false"]
+        interval: 1m30s
+        timeout: 10s
+        retries: 3
+        start_period: 2m
+
+  consulserver:
+    build:
+      context: docker-build-context
+      dockerfile: Dockerfile
+    entrypoint: ["/scripts/consul-init.sh"]
+    hostname: consulserver
+    environment:
+      NOMAD_ADDR: https://region1.dc1.server:4646
+      NOMAD_SKIP_VERIFY: 'true'
+      CONSUL_HTTP_SSL_VERIFY: 'true'
+      NOMAD_TOKEN: "00000000-1000-0000-0000-000000000000"
+      CONSUL_HTTP_TOKEN: "00000000-2000-0000-0000-000000000000"
+      CONSUL_HTTP_ADDR: https://localhost:8501
+      CONSUL_CACERT: /scripts/tls/nomad-agent-ca.pem
+      CONSUL_CLIENT_CERT: /scripts/tls/global-server-nomad.pem
+      CONSUL_CLIENT_KEY: /scripts/tls/global-server-nomad-key.pem
+      NOMAD_CACERT: /scripts/tls/nomad-agent-ca.pem
+      NOMAD_CLIENT_CERT: /scripts/tls/global-server-nomad.pem
+      NOMAD_CLIENT_KEY: /scripts/tls/global-server-nomad-key.pem
+    networks:
+    - hashicorp
+    ports:
+    - 127.0.0.1:8500:8500/tcp
+    - 127.0.0.1:8501:8501/tcp
+    - 127.0.0.1:8600:8600/tcp
+    restart: always
+    init: true
+    volumes:
+      - "/sys:/sys"
+      - "./scripts:/scripts"
+    healthcheck:
+        test: ["CMD", "/bin/sh","-c","consul members|grep alive||false"]
+        interval: 1m30s
+        timeout: 10s
+        retries: 3
+        start_period: 2m
+        
+
+networks:
+ hashicorp:
+
