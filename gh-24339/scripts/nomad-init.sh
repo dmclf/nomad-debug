@@ -131,13 +131,15 @@ plugin "docker" {
 EOHCL
 fi
 
+bootstrap_expect=3
+hostname | grep -q -e region1.dc1.server$ -e region1.dc1.singleserver$ && bootstrap_expect=1
 if (echo $HOSTNAME | grep -q server)
 then
 cat << EOHCL >> /etc/nomad/nomad.hcl
 server {
   authoritative_region = "region1"
   enabled          = true
-  bootstrap_expect = 3
+  bootstrap_expect = ${bootstrap_expect}
   encrypt = "0CMZJT5GUFOp19QiTxO5IDP+qCQhOntJsw3gV4ghaQ0="
 }
 EOHCL
@@ -188,7 +190,7 @@ fi
 sleep 5
 
 aclloop=0
-hostname | grep -q region1.dc1.server$ && aclloop=1
+hostname | grep -q -e region1.dc1.server$ -e region1.dc1.singleserver$ && aclloop=1
 
 if test $aclloop -eq 1;
 then
@@ -213,11 +215,20 @@ cat << EOF > /tmp/test-job
 job "example-job" {
   group "cache" {
     count = 20
+    ephemeral_disk {
+      size    = 10
+    }
+
     task "redis" {
       driver = "docker"
       config {
         image          = "redis:7"
         auth_soft_fail = true
+      }
+
+      logs {
+        max_files = 3
+        max_file_size = 3
       }
 
       identity {
