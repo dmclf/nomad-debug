@@ -46,25 +46,22 @@
 * may indicate jobs that do not run exactly on all environments.
 
 - infrastructure/devops system jobs
+  - [CSI-nfs](https://github.com/kubernetes-csi/csi-driver-nfs)
+  - [CSI-smb](https://github.com/kubernetes-csi/csi-driver-smb)
+  - [alloy](https://grafana.com/oss/alloy)
   - [cadvisor](https://github.com/google/cadvisor)
-  - [plugin-nfs-nodes](https://github.com/kubernetes-csi/csi-driver-nfs)
-  - [plugin-smb-nodes](https://github.com/kubernetes-csi/csi-driver-smb)
-  - [promtail](https://grafana.com/oss/promtail)
   - [vector](https://github.com/vectordotdev/vector)
+  - ~~[promtail](https://grafana.com/oss/promtail)~~
 - infrastructure/devops service jobs
-  - [oauth2proxy](https://github.com/oauth2-proxy/oauth2-proxy)
-  - custom traefik errorpage
+  - [custom traefik errorpage](https://github.com/tarampampam/error-pages)
   - [elastic logstash](https://www.elastic.co/logstash)
   - [loki](https://grafana.com/oss/loki/)
-  - [plugin-nfs-controller](https://github.com/kubernetes-csi/csi-driver-nfs)
-  - [plugin-smb-controller](https://github.com/kubernetes-csi/csi-driver-smb)
   - [nomad-autoscaler](https://github.com/hashicorp/nomad-autoscaler)
+  - [oauth2proxy](https://github.com/oauth2-proxy/oauth2-proxy)
+  - [pyroscope](https://grafana.com/oss/pyroscope/)
   - [vault](https://github.com/hashicorp/vault)
     - also used to template secrets, again, in above setup, job-specs can be same, and environment helps differentiate for production / staging / development (as vault's are environment-specific)
-    - kv
-    - totp
-    - ssh
-    - database
+    - [kv](https://developer.hashicorp.com/vault/docs/secrets/kv) / [totp](https://developer.hashicorp.com/vault/docs/secrets/totp) / [ssh](https://developer.hashicorp.com/vault/docs/secrets/ssh/signed-ssh-certificates) / [database](https://developer.hashicorp.com/vault/docs/secrets/databases)
   - [grafana](https://grafana.com/oss/grafana/)
   - * [netbox](https://github.com/netbox-community/netbox)
     - API backend for prometheus configuration
@@ -78,23 +75,19 @@
     - [prometheus](https://github.com/prometheus/prometheus)
     - [thanos](https://github.com/thanos-io/thanos)
     - exporters
-      - [blackbox](https://github.com/thanos-io/thanos)
-        - SSH probing
-        - VNC probing
-        - Consul API critical/warning state 
-        - SMTP response
-        - various TCP probes
+      - [blackbox](https://github.com/prometheus/blackbox_exporter)
+        - SSH / VNC / SMTP / TCP / DNS probing
         - URL monitoring
           - certificate expiry monitoring
-        - DNS monitoring
-      - [snmp-exporter](https://github.com/prometheus/snmp_exporter)
-      - [postgres-exporter](https://github.com/prometheus-community/postgres_exporter)
-      - [mysql-exporter](https://github.com/prometheus/mysqld_exporter)
       - [clickhouse-exporter](https://clickhouse.com/docs/en/integrations/prometheus)
+      - [graphite-exporter](https://github.com/prometheus/graphite_exporter)
       - [idrac-exporter](https://github.com/mrlhansen/idrac_exporter)
+      - [mysql-exporter](https://github.com/prometheus/mysqld_exporter)
+      - [postgres-exporter](https://github.com/prometheus-community/postgres_exporter)
+      - [redis-exporter](https://github.com/oliver006/redis_exporter)
+      - [rundeck-exporter](https://github.com/phsmith/rundeck_exporter)
       - [smokeping-prober](https://github.com/SuperQ/smokeping_prober)
+      - [snmp-exporter](https://github.com/prometheus/snmp_exporter)
       - [solace-exporter](https://github.com/solacecommunity/solace-prometheus-exporter)
       - [vmware-exporter](https://github.com/pryorda/vmware_exporter)
-      - [rundeck-exporter](https://github.com/phsmith/rundeck_exporter)
-      - [graphite-exporter](https://github.com/prometheus/graphite_exporter)
-      - custom exporters
+      - proprietary custom exporters
