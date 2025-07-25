@@ -6,9 +6,9 @@
 
 | Cluster       | Nomad Regions | Nomad Datacenters | Nomad Servers | Nomad Clients | Nomad Allocations | Nomad Total CPU | Nomad Total Memory | Consul Datacenters |
 | :------------ | :-----------: | :---------------: | :-----------: | :-----------: | :---------------: | :-------------: | :----------------: | :----------------: |
-| Development   | 1             | 1                 | 3             | 2             | 27                | 9 Ghz           | 16  GiB            | 1                  |
-| Staging/UAT   | 2             | 4                 | 9             | 7             | 190               | 200 Ghz         | 240 GiB            | 2                  |
-| Production    | 2             | 3                 | 9             | 17            | 410               | 2655 Ghz        | 1873 GiB           | 2                  |
+| Development   | 1             | 1                 | 3             | 2             | 27                | 34 Ghz          | 16  GiB            | 1                  |
+| Staging/UAT   | 2             | 4                 | 9             | 7             | 190               | 200 Ghz         | 280 GiB            | 2                  |
+| Production    | 2             | 3                 | 9             | 17            | 410               | 3000 Ghz        | 2620 GiB           | 2                  |
 
 - OIDC auth
 - [Traefik & Consul Catalog](https://doc.traefik.io/traefik/providers/consul-catalog/)
