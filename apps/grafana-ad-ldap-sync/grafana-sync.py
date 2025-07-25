@@ -23,6 +23,7 @@ USER_ATTR = "mail"  # or "userPrincipalName"
 STATUS_ATTR = "userAccountControl"
 HEADERS = {"Content-Type": "application/json"}
 GRAFANA_AUTH = HTTPBasicAuth(GRAFANA_SYNC_USER, GRAFANA_SYNC_PASSWORD)
+DEFAULT_REQUESTS_TIMEOUT = 5  # seconds
 
 
 def parse_bool(value: str) -> bool:
@@ -34,8 +35,10 @@ def parse_bool(value: str) -> bool:
     else:
         raise ValueError(f"Invalid boolean string: '{value}'")
 
+
 # simplistic dry-run toggle
 DRY_RUN = parse_bool(os.getenv("DRY_RUN", "True"))
+
 
 def is_enabled(uac_attr):
     try:
@@ -95,7 +98,10 @@ def get_ad_groups_and_users():
 # === GRAFANA API FUNCTIONS ===
 def get_grafana_teams():
     response = requests.get(
-        f"{GRAFANA_URL}/api/teams/search", headers=HEADERS, auth=GRAFANA_AUTH
+        f"{GRAFANA_URL}/api/teams/search",
+        headers=HEADERS,
+        auth=GRAFANA_AUTH,
+        timeout=DEFAULT_REQUESTS_TIMEOUT,
     )
     teams = response.json().get("teams", [])
     return {team["name"]: {"id": team["id"]} for team in teams}
@@ -103,7 +109,10 @@ def get_grafana_teams():
 
 def get_team_members(team_id):
     response = requests.get(
-        f"{GRAFANA_URL}/api/teams/{team_id}/members", headers=HEADERS, auth=GRAFANA_AUTH
+        f"{GRAFANA_URL}/api/teams/{team_id}/members",
+        headers=HEADERS,
+        auth=GRAFANA_AUTH,
+        timeout=DEFAULT_REQUESTS_TIMEOUT,
     )
     members = response.json()
     return [member["email"] for member in members]
@@ -114,6 +123,7 @@ def get_user_id_by_email(email):
         f"{GRAFANA_URL}/api/users/lookup?loginOrEmail={email}",
         headers=HEADERS,
         auth=GRAFANA_AUTH,
+        timeout=DEFAULT_REQUESTS_TIMEOUT,
     )
     if response.status_code == 200:
         return response.json().get("id")
@@ -135,6 +145,7 @@ def create_grafana_user(email, name=None):
         headers=HEADERS,
         auth=GRAFANA_AUTH,
         json=payload,
+        timeout=DEFAULT_REQUESTS_TIMEOUT,
     )
     if response.status_code == 200:
         print(f"✅ Created Grafana user: {email}")
@@ -153,6 +164,7 @@ def create_team(team_name):
         headers=HEADERS,
         auth=GRAFANA_AUTH,
         json={"name": team_name},
+        timeout=DEFAULT_REQUESTS_TIMEOUT,
     )
     if response.status_code == 200:
         return response.json()["teamId"]
@@ -165,7 +177,10 @@ def delete_team(team_id):
         print(f"[DRY-RUN] Would delete team ID {team_id}")
     else:
         response = requests.delete(
-            f"{GRAFANA_URL}/api/teams/{team_id}", headers=HEADERS, auth=GRAFANA_AUTH
+            f"{GRAFANA_URL}/api/teams/{team_id}",
+            headers=HEADERS,
+            auth=GRAFANA_AUTH,
+            timeout=DEFAULT_REQUESTS_TIMEOUT,
         )
         if response.status_code == 200:
             print(f"🗑️ Deleted team ID {team_id}")
@@ -182,6 +197,7 @@ def add_user_to_team(team_id, user_id):
             headers=HEADERS,
             auth=GRAFANA_AUTH,
             json={"userId": user_id},
+            timeout=DEFAULT_REQUESTS_TIMEOUT,
         )
 
 
@@ -193,6 +209,7 @@ def remove_user_from_team(team_id, user_id):
             f"{GRAFANA_URL}/api/teams/{team_id}/members/{user_id}",
             headers=HEADERS,
             auth=GRAFANA_AUTH,
+            timeout=DEFAULT_REQUESTS_TIMEOUT,
         )
 
 
@@ -252,10 +269,10 @@ def sync_ad_to_grafana():
 
 # === RUN SYNC ===
 if __name__ == "__main__":
-    if ',' in GRAFANA_URL:
+    if "," in GRAFANA_URL:
         MULTIPLE_GRAFANA_URLS = GRAFANA_URL
         # assume multiple links given
-        for GRAFANA_URL in MULTIPLE_GRAFANA_URLS.split(','):
+        for GRAFANA_URL in MULTIPLE_GRAFANA_URLS.split(","):
             print(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
             sync_ad_to_grafana()
     else:
