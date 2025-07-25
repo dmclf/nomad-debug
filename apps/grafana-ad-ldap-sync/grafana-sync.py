@@ -252,5 +252,12 @@ def sync_ad_to_grafana():
 
 # === RUN SYNC ===
 if __name__ == "__main__":
-    print(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
-    sync_ad_to_grafana()
+    if ',' in GRAFANA_URL:
+        MULTIPLE_GRAFANA_URLS = GRAFANA_URL
+        # assume multiple links given
+        for GRAFANA_URL in MULTIPLE_GRAFANA_URLS.split(','):
+            print(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
+            sync_ad_to_grafana()
+    else:
+        print(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
+        sync_ad_to_grafana()
