@@ -25,7 +25,7 @@ example usage:
 
 `GRAFANA_SYNC_PASSWORD`: *password for grafana (needs admin power)*
 
-`GRAFANA_URL`: *URL where grafana can be reached, example: https://grafana.mydomain.com*
+`GRAFANA_URL`: *URL where grafana can be reached, example: https://grafana.mydomain.com*, can optionally also be comma-seperated string for multiple values.
 
 `DRY_RUN`: `*true|false` (case-insensitive) *perform dry-run and show what would be done*
 
