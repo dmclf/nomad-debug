@@ -23,7 +23,7 @@ USER_ATTR = "mail"  # or "userPrincipalName"
 STATUS_ATTR = "userAccountControl"
 HEADERS = {"Content-Type": "application/json"}
 GRAFANA_AUTH = HTTPBasicAuth(GRAFANA_SYNC_USER, GRAFANA_SYNC_PASSWORD)
-DEFAULT_REQUESTS_TIMEOUT = 5  # seconds
+DEFAULT_REQUESTS_TIMEOUT = os.getenv("REQUESTS_TIMEOUT", "15")  # seconds
 
 
 def parse_bool(value: str) -> bool:
