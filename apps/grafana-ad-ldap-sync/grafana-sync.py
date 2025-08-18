@@ -23,7 +23,7 @@ USER_ATTR = "mail"  # or "userPrincipalName"
 STATUS_ATTR = "userAccountControl"
 HEADERS = {"Content-Type": "application/json"}
 GRAFANA_AUTH = HTTPBasicAuth(GRAFANA_SYNC_USER, GRAFANA_SYNC_PASSWORD)
-DEFAULT_REQUESTS_TIMEOUT = os.getenv("REQUESTS_TIMEOUT", "15")  # seconds
+DEFAULT_REQUESTS_TIMEOUT = int(os.getenv("REQUESTS_TIMEOUT", "15"))  # seconds
 
 
 def parse_bool(value: str) -> bool:
@@ -47,12 +47,10 @@ def is_enabled(uac_attr):
     except (TypeError, ValueError, AttributeError):
         return False  # Treat as disabled if value is missing or invalid
 
-
 def generate_password(length=12):
     characters = string.ascii_letters + string.digits + string.punctuation
     password = "".join(random.choice(characters) for _ in range(length))
     return password
-
 
 def get_ad_groups_and_users():
     server = Server(LDAP_SERVER, get_info=ALL)
@@ -135,7 +133,7 @@ def create_grafana_user(email, name=None):
         "name": name or email.split("@")[0],
         "email": email,
         "login": email,
-        "password": generate_password,
+        "password": generate_password()
     }
     if DRY_RUN:
         print(f"[DRY-RUN] Would create Grafana user: {email}")
