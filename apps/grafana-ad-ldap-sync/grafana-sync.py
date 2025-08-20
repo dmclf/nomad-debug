@@ -4,6 +4,7 @@ import random
 import string
 import socket
 import os
+import time
 from requests.auth import HTTPBasicAuth
 from ldap3 import Server, Connection, ALL, SUBTREE
 
@@ -24,6 +25,7 @@ STATUS_ATTR = "userAccountControl"
 HEADERS = {"Content-Type": "application/json"}
 GRAFANA_AUTH = HTTPBasicAuth(GRAFANA_SYNC_USER, GRAFANA_SYNC_PASSWORD)
 DEFAULT_REQUESTS_TIMEOUT = int(os.getenv("REQUESTS_TIMEOUT", "15"))  # seconds
+DEFAULT_REQUESTS_RETRIES = int(os.getenv("REQUESTS_RETRIES", "3"))
 
 
 def parse_bool(value: str) -> bool:
@@ -47,10 +49,12 @@ def is_enabled(uac_attr):
     except (TypeError, ValueError, AttributeError):
         return False  # Treat as disabled if value is missing or invalid
 
+
 def generate_password(length=12):
     characters = string.ascii_letters + string.digits + string.punctuation
     password = "".join(random.choice(characters) for _ in range(length))
     return password
+
 
 def get_ad_groups_and_users():
     server = Server(LDAP_SERVER, get_info=ALL)
@@ -95,36 +99,87 @@ def get_ad_groups_and_users():
 
 # === GRAFANA API FUNCTIONS ===
 def get_grafana_teams():
-    response = requests.get(
-        f"{GRAFANA_URL}/api/teams/search",
-        headers=HEADERS,
-        auth=GRAFANA_AUTH,
-        timeout=DEFAULT_REQUESTS_TIMEOUT,
+    for attempt in range(DEFAULT_REQUESTS_RETRIES):
+        try:
+            response = requests.get(
+                f"{GRAFANA_URL}/api/teams/search",
+                headers=HEADERS,
+                auth=GRAFANA_AUTH,
+                timeout=DEFAULT_REQUESTS_TIMEOUT,
+            )
+            if response.status_code == 200:
+                teams = response.json().get("teams", [])
+                return {team["name"]: {"id": team["id"]} for team in teams}
+            elif response.status_code == 404:
+                raise requests.exceptions.HTTPError(
+                    f"received {response.status_code} , did you specify correct grafana url/user/credentials?"
+                )
+            print(
+                f"received {response.status_code} , did you specify correct grafana url/user/credentials?"
+            )
+            return None
+        except requests.exceptions.ReadTimeout:
+            print(
+                f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+            )
+            time.sleep(2**attempt)  # Exponential backoff
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+            time.sleep(2**attempt)
+    print(
+        f"Failed to fetch data from {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
     )
-    teams = response.json().get("teams", [])
-    return {team["name"]: {"id": team["id"]} for team in teams}
+    return None
 
 
 def get_team_members(team_id):
-    response = requests.get(
-        f"{GRAFANA_URL}/api/teams/{team_id}/members",
-        headers=HEADERS,
-        auth=GRAFANA_AUTH,
-        timeout=DEFAULT_REQUESTS_TIMEOUT,
+    for attempt in range(DEFAULT_REQUESTS_RETRIES):
+        try:
+            response = requests.get(
+                f"{GRAFANA_URL}/api/teams/{team_id}/members",
+                headers=HEADERS,
+                auth=GRAFANA_AUTH,
+                timeout=DEFAULT_REQUESTS_TIMEOUT,
+            )
+            members = response.json()
+            return [member["email"] for member in members]
+        except requests.exceptions.ReadTimeout:
+            print(
+                f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+            )
+            time.sleep(2**attempt)  # Exponential backoff
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+            time.sleep(2**attempt)
+    print(
+        f"Failed to fetch data from {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
     )
-    members = response.json()
-    return [member["email"] for member in members]
+    return None
 
 
 def get_user_id_by_email(email):
-    response = requests.get(
-        f"{GRAFANA_URL}/api/users/lookup?loginOrEmail={email}",
-        headers=HEADERS,
-        auth=GRAFANA_AUTH,
-        timeout=DEFAULT_REQUESTS_TIMEOUT,
+    for attempt in range(DEFAULT_REQUESTS_RETRIES):
+        try:
+            response = requests.get(
+                f"{GRAFANA_URL}/api/users/lookup?loginOrEmail={email}",
+                headers=HEADERS,
+                auth=GRAFANA_AUTH,
+                timeout=DEFAULT_REQUESTS_TIMEOUT,
+            )
+            if response.status_code == 200:
+                return response.json().get("id")
+            return None
+        except requests.exceptions.ReadTimeout:
+            print(
+                f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+            )
+            time.sleep(2**attempt)  # Exponential backoff
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+            time.sleep(2**attempt)
+    print(
+        f"Failed to fetch data from {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
     )
-    if response.status_code == 200:
-        return response.json().get("id")
     return None
 
 
@@ -133,40 +188,68 @@ def create_grafana_user(email, name=None):
         "name": name or email.split("@")[0],
         "email": email,
         "login": email,
-        "password": generate_password()
+        "password": generate_password(),
     }
     if DRY_RUN:
         print(f"[DRY-RUN] Would create Grafana user: {email}")
         return None
-    response = requests.post(
-        f"{GRAFANA_URL}/api/admin/users",
-        headers=HEADERS,
-        auth=GRAFANA_AUTH,
-        json=payload,
-        timeout=DEFAULT_REQUESTS_TIMEOUT,
+    for attempt in range(DEFAULT_REQUESTS_RETRIES):
+        try:
+            response = requests.post(
+                f"{GRAFANA_URL}/api/admin/users",
+                headers=HEADERS,
+                auth=GRAFANA_AUTH,
+                json=payload,
+                timeout=DEFAULT_REQUESTS_TIMEOUT,
+            )
+            if response.status_code == 200:
+                print(f"✅ Created Grafana user: {email}")
+                return response.json().get("id")
+            else:
+                print(f"❌ Failed to create user: {email} — {response.text}")
+                return None
+        except requests.exceptions.ReadTimeout:
+            print(
+                f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+            )
+            time.sleep(2**attempt)  # Exponential backoff
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+            time.sleep(2**attempt)
+    print(
+        f"Failed to post data to {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
     )
-    if response.status_code == 200:
-        print(f"✅ Created Grafana user: {email}")
-        return response.json().get("id")
-    else:
-        print(f"❌ Failed to create user: {email} — {response.text}")
-        return None
+    return None
 
 
 def create_team(team_name):
     if DRY_RUN:
         print(f"[DRY-RUN] Would create team: {team_name}")
         return None
-    response = requests.post(
-        f"{GRAFANA_URL}/api/teams",
-        headers=HEADERS,
-        auth=GRAFANA_AUTH,
-        json={"name": team_name},
-        timeout=DEFAULT_REQUESTS_TIMEOUT,
+    for attempt in range(DEFAULT_REQUESTS_RETRIES):
+        try:
+            response = requests.post(
+                f"{GRAFANA_URL}/api/teams",
+                headers=HEADERS,
+                auth=GRAFANA_AUTH,
+                json={"name": team_name},
+                timeout=DEFAULT_REQUESTS_TIMEOUT,
+            )
+            if response.status_code == 200:
+                return response.json()["teamId"]
+            print(f"❌ Failed to create team: {team_name}")
+            return None
+        except requests.exceptions.ReadTimeout:
+            print(
+                f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+            )
+            time.sleep(2**attempt)  # Exponential backoff
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+            time.sleep(2**attempt)
+    print(
+        f"Failed to post data to {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
     )
-    if response.status_code == 200:
-        return response.json()["teamId"]
-    print(f"❌ Failed to create team: {team_name}")
     return None
 
 
@@ -174,47 +257,93 @@ def delete_team(team_id):
     if DRY_RUN:
         print(f"[DRY-RUN] Would delete team ID {team_id}")
     else:
-        response = requests.delete(
-            f"{GRAFANA_URL}/api/teams/{team_id}",
-            headers=HEADERS,
-            auth=GRAFANA_AUTH,
-            timeout=DEFAULT_REQUESTS_TIMEOUT,
+        for attempt in range(DEFAULT_REQUESTS_RETRIES):
+            try:
+                response = requests.delete(
+                    f"{GRAFANA_URL}/api/teams/{team_id}",
+                    headers=HEADERS,
+                    auth=GRAFANA_AUTH,
+                    timeout=DEFAULT_REQUESTS_TIMEOUT,
+                )
+                if response.status_code == 200:
+                    print(f"🗑️ Deleted team ID {team_id}")
+                else:
+                    print(f"❌ Failed to delete team ID {team_id}")
+            except requests.exceptions.ReadTimeout:
+                print(
+                    f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+                )
+                time.sleep(2**attempt)  # Exponential backoff
+            except requests.exceptions.RequestException as e:
+                print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+                time.sleep(2**attempt)
+        print(
+            f"Failed to delete data from {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
         )
-        if response.status_code == 200:
-            print(f"🗑️ Deleted team ID {team_id}")
-        else:
-            print(f"❌ Failed to delete team ID {team_id}")
+        return None
 
 
 def add_user_to_team(team_id, user_id):
     if DRY_RUN:
         print(f"[DRY-RUN] Would add user ID {user_id} to team ID {team_id}")
     else:
-        requests.post(
-            f"{GRAFANA_URL}/api/teams/{team_id}/members",
-            headers=HEADERS,
-            auth=GRAFANA_AUTH,
-            json={"userId": user_id},
-            timeout=DEFAULT_REQUESTS_TIMEOUT,
+        for attempt in range(DEFAULT_REQUESTS_RETRIES):
+            try:
+                requests.post(
+                    f"{GRAFANA_URL}/api/teams/{team_id}/members",
+                    headers=HEADERS,
+                    auth=GRAFANA_AUTH,
+                    json={"userId": user_id},
+                    timeout=DEFAULT_REQUESTS_TIMEOUT,
+                )
+            except requests.exceptions.ReadTimeout:
+                print(
+                    f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+                )
+                time.sleep(2**attempt)  # Exponential backoff
+            except requests.exceptions.RequestException as e:
+                print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+                time.sleep(2**attempt)
+        print(
+            f"Failed to post data to {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
         )
+        return None
 
 
 def remove_user_from_team(team_id, user_id):
     if DRY_RUN:
         print(f"[DRY-RUN] Would remove user ID {user_id} from team ID {team_id}")
     else:
-        requests.delete(
-            f"{GRAFANA_URL}/api/teams/{team_id}/members/{user_id}",
-            headers=HEADERS,
-            auth=GRAFANA_AUTH,
-            timeout=DEFAULT_REQUESTS_TIMEOUT,
+        for attempt in range(DEFAULT_REQUESTS_RETRIES):
+            try:
+                requests.delete(
+                    f"{GRAFANA_URL}/api/teams/{team_id}/members/{user_id}",
+                    headers=HEADERS,
+                    auth=GRAFANA_AUTH,
+                    timeout=DEFAULT_REQUESTS_TIMEOUT,
+                )
+            except requests.exceptions.ReadTimeout:
+                print(
+                    f"ReadTimeout occurred on {GRAFANA_URL}: attempt {attempt + 1}. Retrying..."
+                )
+                time.sleep(2**attempt)  # Exponential backoff
+            except requests.exceptions.RequestException as e:
+                print(f"An error occurred: {e} on {GRAFANA_URL}: Retrying...")
+                time.sleep(2**attempt)
+        print(
+            f"Failed to delete data from {GRAFANA_URL} after {DEFAULT_REQUESTS_RETRIES} attempts."
         )
+        return None
 
 
 # === SYNC FUNCTION ===
 def sync_ad_to_grafana():
     ad_groups = get_ad_groups_and_users()
+    if not ad_groups:
+        exit("errors fetching AD Groups")
     grafana_teams = get_grafana_teams()
+    if not grafana_teams:
+        exit("errors fetching Grafana teams")
 
     ad_group_names = set(ad_groups.keys())
     grafana_team_names = set(grafana_teams.keys())
