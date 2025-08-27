@@ -48,6 +48,8 @@
 - infrastructure/devops system jobs
   - [CSI-nfs](https://github.com/kubernetes-csi/csi-driver-nfs)
   - [CSI-smb](https://github.com/kubernetes-csi/csi-driver-smb)
+  - [CSI-juicefs](https://github.com/juicedata/juicefs-csi-driver)
+  - [CSI-s3](https://github.com/yandex-cloud/k8s-csi-s3)
   - [alloy](https://grafana.com/oss/alloy)
   - [cadvisor](https://github.com/google/cadvisor)
   - [vector](https://github.com/vectordotdev/vector)
