@@ -7,6 +7,7 @@ import os
 import time
 from requests.auth import HTTPBasicAuth
 from ldap3 import Server, Connection, ALL, SUBTREE
+import logging
 
 # CONFIGURATION
 AD_DOMAIN = os.getenv("AD_DOMAIN", "my-ad-domain")
@@ -30,6 +31,9 @@ GITLAB_URL = os.getenv("GITLAB_URL")  # ex.. https://gitlab.my-ad-domain
 GITLAB_HEADER = {GITLAB_TOKEN_TYPE: GITLAB_TOKEN}
 DEFAULT_REQUESTS_TIMEOUT = int(os.getenv("REQUESTS_TIMEOUT", "15"))  # seconds
 DEFAULT_REQUESTS_RETRIES = int(os.getenv("REQUESTS_RETRIES", "3"))
+SANITY_CHECK_COUNT_AD = int(os.getenv("SANITY_CHECK_COUNT_AD", "5"))  # at least expect 5 users in AD
+SANITY_CHECK_COUNT_GRAFANA = int(os.getenv("SANITY_CHECK_COUNT_GRAFANA", "5"))  # at least expect 1 (admin) user on grafana
+SANITY_CHECK_COUNT_GITLAB = int(os.getenv("SANITY_CHECK_COUNT_GITLAB", "5"))  # at least expect 2 users (root/ghost) on gitlab
 
 
 def parse_bool(value: str) -> bool:
@@ -44,6 +48,45 @@ def parse_bool(value: str) -> bool:
 
 # simplistic dry-run toggle
 DRY_RUN = parse_bool(os.getenv("DRY_RUN", "True"))
+
+
+class ColorCodes:
+    RESET = "\033[0m"
+    DEBUG = "\033[90m"  # Grey
+    INFO = "\033[0m"  # Default (no color change)
+    WARNING = "\033[33m"  # Yellow
+    ERROR = "\033[31m"  # Red
+    CRITICAL = "\033[31;1m"  # Bold Red
+
+
+class ColoredFormatter(logging.Formatter):
+    FORMATS = {
+        logging.DEBUG: ColorCodes.DEBUG + "%(levelname)s: %(message)s" + ColorCodes.RESET,
+        logging.INFO: ColorCodes.INFO + "%(levelname)s: %(message)s" + ColorCodes.RESET,
+        logging.WARNING: ColorCodes.WARNING + "%(levelname)s: %(message)s" + ColorCodes.RESET,
+        logging.ERROR: ColorCodes.ERROR + "%(levelname)s: %(message)s" + ColorCodes.RESET,
+        logging.CRITICAL: ColorCodes.CRITICAL + "%(levelname)s: %(message)s" + ColorCodes.RESET,
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+
+# Get a logger instance
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)  # Set the desired logging level
+
+# Create a stream handler to output to the console
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# Set the custom formatter for the handler
+ch.setFormatter(ColoredFormatter())
+
+# Add the handler to the logger
+logger.addHandler(ch)
 
 
 def is_enabled(uac_attr):
@@ -81,9 +124,7 @@ def make_request(
                     params = {}
                     while True:
                         params.update({"page": page})
-                        response = requests.get(
-                            url, timeout=timeout, params=params, **kwargs
-                        )
+                        response = requests.get(url, timeout=timeout, params=params, **kwargs)
                         data = response.json()
                         all_items.extend(data)
                         next_page = response.headers.get("X-Next-Page")
@@ -100,29 +141,32 @@ def make_request(
                 response = requests.delete(url, timeout=timeout, **kwargs)
 
             if response.status_code == 400 and "already added" in response.text:
-                print(response.status_code, response.text)
+                logger.debug(response.status_code, response.text)
                 return response
             elif response.status_code == 404 and "user not found" in response.text:
                 return response
             elif response.status_code != 200:
-                print(response.status_code, response.text)
+                logger.debug(response.status_code, response.text)
             response.raise_for_status()  # Raise error for bad status codes
             return response
 
         except requests.exceptions.Timeout:
-            print(f"⏱️ Timeout on attempt {attempt} for {method.upper()} {url}")
+            logger.warning(f"⏱️ Timeout on attempt {attempt} for {method.upper()} {url}")
         except requests.exceptions.RequestException as e:
-            print(f"⚠️ Request failed on attempt {attempt}: {e}")
+            logger.error(f"⚠️ Request failed on attempt {attempt}: {e}")
 
         time.sleep(delay)
 
-    print(f"❌ All {retries} attempts failed for {method.upper()} {url}")
+    logger.critical(f"❌ All {retries} attempts failed for {method.upper()} {url}")
     return None
 
 
 def get_gitlab_users():
     response = make_request(
-        "get", f"{GITLAB_URL}/api/v4/users", headers=GITLAB_HEADER, paginated=True
+        "get",
+        f"{GITLAB_URL}/api/v4/users",
+        headers=GITLAB_HEADER,
+        paginated=True,
     )
     gitlab_users = [
         {
@@ -137,39 +181,33 @@ def get_gitlab_users():
         for x in response
         if not x["bot"] and AD_DOMAIN in x["email"]
     ]
+    if len(gitlab_users) < SANITY_CHECK_COUNT_GITLAB:
+        exit(f"GITLAB_usercount:{len(gitlab_users)} does not match minimal SANITY_CHECK_COUNT_GITLAB:{SANITY_CHECK_COUNT_GITLAB}")
+    else:
+        logger.debug(f"AD_usercount:{len(gitlab_users)} OK (>{SANITY_CHECK_COUNT_GITLAB} (SANITY_CHECK_COUNT_GITLAB)")
     return gitlab_users
 
 
-def sync_ad_to_gitlab(ad_groups, gitlab_users):
+def sync_ad_to_gitlab(ad_users, gitlab_users):
     # example usecase, gitlab with OAUTH SSO
-    ad_users = set(user for users in ad_groups.values() for user in users)
     for user in gitlab_users:
         # do not block id=1 (root)
         # do not block users with 'bot' in note
         # only check for active user-states to block
-        if (
-            user["id"] != 1
-            and user["email"] not in ad_users
-            and "active" in user["state"]
-            and "bot" not in user["note"]
-        ):
-            print(f'user is not active, blocking: {user['email']}')
+        if user["id"] != 1 and user["email"] not in ad_users and "active" in user["state"] and "bot" not in user["note"]:
+            logger.warning(f'❌user is not active, blocking: {user['email']}')
             action_gitlab_user(user, "block")
 
         # re-activate users if they were blocked but should be active.:
-        if (
-            user["id"] != 1
-            and user["email"] in ad_users
-            and "active" not in user["state"]
-        ):
-            print(f"user is active, unblocking: {user}")
+        if user["id"] != 1 and user["email"] in ad_users and "active" not in user["state"]:
+            logger.warning(f"✅user is active, unblocking: {user}")
             action_gitlab_user(user, "unblock")
         # delete_gitlab_user(user)  # Your custom deletion function
 
 
 def action_gitlab_user(user, action):
     if DRY_RUN:
-        print(f"[DRY-RUN] Would {action} user: {user['email']}")
+        logger.debug(f"[DRY-RUN] Would {action} user: {user['email']}")
         return None
     else:
         response = make_request(
@@ -178,13 +216,13 @@ def action_gitlab_user(user, action):
             headers=GITLAB_HEADER,
         )
         if response.status_code == 201:
-            print(f"✅ User {user['email']} successfully {action}'ed.")
+            logger.info(f"✅ User {user['email']} successfully {action}'ed.")
         elif response.status_code == 403:
-            print("❌ Forbidden: You may not have permission to {action} users.")
+            logger.error("❌ Forbidden: You may not have permission to {action} users.")
         elif response.status_code == 404:
-            print("❌ User not found.")
+            logger.error("❌ User not found.")
         else:
-            print(f"⚠️ Unexpected error: {response.status_code} - {response.text}")
+            logger.critical(f"⚠️ Unexpected error: {response.status_code} - {response.text}")
 
 
 def get_ad_groups_and_users():
@@ -230,23 +268,22 @@ def get_ad_groups_and_users():
 # === GRAFANA API FUNCTIONS ===
 def get_grafana_teams():
     response = make_request(
-        "get", f"{GRAFANA_URL}/api/teams/search", headers=HEADERS, auth=GRAFANA_AUTH
+        "get",
+        f"{GRAFANA_URL}/api/teams/search",
+        headers=HEADERS,
+        auth=GRAFANA_AUTH,
     )
     if response.status_code == 200:
         teams = response.json().get("teams", [])
         return {team["name"]: {"id": team["id"]} for team in teams}
     elif response.status_code == 404:
-        raise requests.exceptions.HTTPError(
-            f"received {response.status_code} , did you specify correct grafana url/user/credentials?"
-        )
+        raise requests.exceptions.HTTPError(f"received {response.status_code} , did you specify correct grafana url/user/credentials?")
         return None
     return None
 
 
 def get_grafana_users():
-    response = make_request(
-        "get", f"{GRAFANA_URL}/api/users", headers=HEADERS, auth=GRAFANA_AUTH
-    )
+    response = make_request("get", f"{GRAFANA_URL}/api/users", headers=HEADERS, auth=GRAFANA_AUTH)
     if response.status_code == 200:
         users = response.json()
         return [member["email"] for member in users]
@@ -286,7 +323,7 @@ def create_grafana_user(email, name=None):
         "password": generate_password(),
     }
     if DRY_RUN:
-        print(f"[DRY-RUN] Would create Grafana user: {email}")
+        logger.debug(f"[DRY-RUN] Would create Grafana user: {email}")
         return None
     else:
         response = make_request(
@@ -297,16 +334,16 @@ def create_grafana_user(email, name=None):
             json=payload,
         )
         if response.status_code == 200:
-            print(f"✅ Created Grafana user: {email}")
+            logger.info(f"✅ Created Grafana user: {email}")
             return response.json().get("id")
         else:
-            print(f"❌ Failed to create user: {email} — {response.text}")
+            logger.error(f"❌ Failed to create user: {email} — {response.text}")
             return None
 
 
 def create_team(team_name):
     if DRY_RUN:
-        print(f"[DRY-RUN] Would create team: {team_name}")
+        logger.debug(f"[DRY-RUN] Would create team: {team_name}")
         return None
     else:
         response = make_request(
@@ -317,16 +354,16 @@ def create_team(team_name):
             json={"name": team_name},
         )
         if response.status_code == 200:
-            print(f"✅ Created Team {team_name} ({response.status_code})")
+            logger.info(f"✅ Created Team {team_name} ({response.status_code})")
             return response.json()["teamId"]
         else:
-            print(f"❌ Failed to create team: {team_name} ({response.status_code})")
+            logger.error(f"❌ Failed to create team: {team_name} ({response.status_code})")
             return None
 
 
 def delete_team(team_id):
     if DRY_RUN:
-        print(f"[DRY-RUN] Would delete team ID {team_id}")
+        logger.info(f"[DRY-RUN] Would delete team ID {team_id}")
     else:
         response = make_request(
             "delete",
@@ -335,16 +372,16 @@ def delete_team(team_id):
             auth=GRAFANA_AUTH,
         )
         if response.status_code == 200:
-            print(f"🗑️ Deleted team ID {team_id} ({response.status_code})")
+            logger.warning(f"🗑️ Deleted team ID {team_id} ({response.status_code})")
             return True
         else:
-            print(f"❌ Failed to delete team ID {team_id} ({response.status_code})")
+            logger.error(f"❌ Failed to delete team ID {team_id} ({response.status_code})")
             return None
 
 
 def delete_user(user_id):
     if DRY_RUN:
-        print(f"[DRY-RUN] Would delete User ID {user_id}")
+        logger.info(f"[DRY-RUN] Would delete User ID {user_id}")
     else:
         response = make_request(
             "delete",
@@ -353,16 +390,16 @@ def delete_user(user_id):
             auth=GRAFANA_AUTH,
         )
         if response.status_code == 200:
-            print(f"🗑️ Deleted User ID {user_id} ({response.status_code})")
+            logger.warning(f"🗑️ Deleted User ID {user_id} ({response.status_code})")
             return True
         else:
-            print(f"❌ Failed to delete User ID {user_id} ({response.status_code})")
+            logger.error(f"❌ Failed to delete User ID {user_id} ({response.status_code})")
             return None
 
 
 def add_user_to_team(team_id, user_id):
     if DRY_RUN:
-        print(f"[DRY-RUN] Would add user ID {user_id} to team ID {team_id}")
+        logger.debug(f"[DRY-RUN] Would add user ID {user_id} to team ID {team_id}")
     else:
         response = make_request(
             "post",
@@ -372,20 +409,16 @@ def add_user_to_team(team_id, user_id):
             json={"userId": user_id},
         )
         if response.status_code == 200:
-            print(
-                f"✅ added user {user_id} to team: {team_id} ({response.status_code})"
-            )
+            logger.info(f"✅ added user {user_id} to team: {team_id} ({response.status_code})")
             return response
         else:
-            print(
-                f"❌ Failed to add user {user_id} team: {team_id} ({response.status_code})"
-            )
+            logger.error(f"❌ Failed to add user {user_id} team: {team_id} ({response.status_code})")
             return None
 
 
 def remove_user_from_team(team_id, user_id):
     if DRY_RUN:
-        print(f"[DRY-RUN] Would remove user ID {user_id} from team ID {team_id}")
+        logger.debug(f"[DRY-RUN] Would remove user ID {user_id} from team ID {team_id}")
     else:
         response = make_request(
             "delete",
@@ -394,19 +427,15 @@ def remove_user_from_team(team_id, user_id):
             auth=GRAFANA_AUTH,
         )
         if response.status_code == 200:
-            print(
-                f"🗑️  Deleted User ID {user_id} from team {team_id} ({response.status_code})"
-            )
+            logger.warning(f"🗑️  Deleted User ID {user_id} from team {team_id} ({response.status_code})")
             return True
         else:
-            print(
-                f"❌ Failed to delete User ID {user_id} from team {team_id} ({response.status_code})"
-            )
+            logger.error(f"❌ Failed to delete User ID {user_id} from team {team_id} ({response.status_code})")
             return None
 
 
 # === SYNC FUNCTION ===
-def sync_ad_to_grafana(ad_groups):
+def sync_ad_to_grafana(ad_groups, ad_users):
     grafana_teams = get_grafana_teams()
     if not grafana_teams:
         exit("errors fetching Grafana teams")
@@ -414,20 +443,24 @@ def sync_ad_to_grafana(ad_groups):
     ad_group_names = set(ad_groups.keys())
     grafana_team_names = set(grafana_teams.keys())
     grafana_all_users = get_grafana_users()
+    if len(grafana_all_users) < SANITY_CHECK_COUNT_GRAFANA:
+        exit(f"GRAFANA_usercount:{len(grafana_all_users)} does not match minimal SANITY_CHECK_COUNT_GRAFANA:{SANITY_CHECK_COUNT_GRAFANA}")
+    else:
+        logger.debug(f"GRAFANA_usercount:{len(grafana_all_users)} OK (>{SANITY_CHECK_COUNT_GRAFANA} (SANITY_CHECK_COUNT_GRAFANA)")
 
     # === DELETE TEAMS NOT IN AD ===
     extra_teams = grafana_team_names - ad_group_names
     for team_name in extra_teams:
         team_id = grafana_teams[team_name]["id"]
-        print(f"🗑️ Grafana team not in AD: {team_name}")
+        logger.warning(f"🗑️ Grafana team not in AD: {team_name}")
         delete_team(team_id)
 
     # === SYNC EXISTING OR CREATE MISSING TEAMS ===
     for group_name, ad_emails in ad_groups.items():
-        print(f"🔄 Syncing group: {group_name}")
+        logger.info(f"🔄 Syncing group: {group_name}")
         team = grafana_teams.get(group_name)
         if not team:
-            print(f"🆕 Team missing in Grafana: {group_name}")
+            logger.warning(f"🆕 Team missing in Grafana: {group_name}")
             team_id = create_team(group_name)
             if team_id is None and DRY_RUN:
                 continue
@@ -441,31 +474,30 @@ def sync_ad_to_grafana(ad_groups):
             if email not in grafana_members:
                 user_id = get_user_id_by_email(email)
                 if not user_id:
-                    print(f"👤 User not found in Grafana: {email}")
+                    logger.warning(f"👤 User not found in Grafana: {email}")
                     user_id = create_grafana_user(email)
                 if user_id:
-                    print(f"➕ Adding {email} to {group_name}")
+                    logger.info(f"➕ Adding {email} to {group_name}")
                     add_user_to_team(team_id, user_id)
                 else:
-                    print(f"⚠️ User not found in Grafana: {email}")
+                    logger.warning(f"⚠️ User not found in Grafana: {email}")
 
         # Remove extra users
         for email in grafana_members:
             if email not in ad_emails:
                 user_id = get_user_id_by_email(email)
                 if not user_id:
-                    print(f"🚫 Removing ghost user {email} from {group_name}")
+                    logger.warning(f"🚫 Removing ghost user {email} from {group_name}")
                     remove_user_from_team(team_id, user_id)
                 if user_id:
-                    print(f"➖ Removing {email} from {group_name}")
+                    logger.warning(f"➖ Removing {email} from {group_name}")
                     remove_user_from_team(team_id, user_id)
 
     # === REMOVE USERS NO LONGER REFERENCED
-    ad_users = set(user for users in ad_groups.values() for user in users)
     for grafana_user in grafana_all_users:
         if AD_DOMAIN in grafana_user:
             if grafana_user not in ad_users:
-                print(f"➖ Removing {grafana_user} from grafana")
+                logger.warning(f"➖ Removing {grafana_user} from grafana")
                 delete_user(get_user_id_by_email(grafana_user))
 
 
@@ -474,18 +506,23 @@ if __name__ == "__main__":
     ad_groups = get_ad_groups_and_users()
     if not ad_groups:
         exit("errors fetching AD Info")
+    ad_users = set(user for users in ad_groups.values() for user in users)
+    if len(ad_users) < SANITY_CHECK_COUNT_AD:
+        exit(f"AD_usercount:{len(ad_users)} does not match minimal SANITY_CHECK_COUNT_AD:{SANITY_CHECK_COUNT_AD}")
+    else:
+        logger.debug(f"AD_usercount:{len(ad_users)} OK (>{SANITY_CHECK_COUNT_AD} (SANITY_CHECK_COUNT_AD)")
 
     if GITLAB_TOKEN and GITLAB_URL:
-        print("trying AD<->Gitlab sync")
-        sync_ad_to_gitlab(ad_groups, get_gitlab_users())
+        logger.debug("trying AD<->Gitlab sync")
+        sync_ad_to_gitlab(ad_users, get_gitlab_users())
 
-    print("trying AD<->Grafana sync")
+    logger.debug("trying AD<->Grafana sync")
     if "," in GRAFANA_URL:
         MULTIPLE_GRAFANA_URLS = GRAFANA_URL
         # assume multiple links given
         for GRAFANA_URL in MULTIPLE_GRAFANA_URLS.split(","):
-            print(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
-            sync_ad_to_grafana(ad_groups)
+            logger.debug(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
+            sync_ad_to_grafana(ad_groups, ad_users)
     else:
-        print(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
-        sync_ad_to_grafana(ad_groups)
+        logger.debug(f"DRY_RUN: {DRY_RUN} @ {GRAFANA_URL}")
+        sync_ad_to_grafana(ad_groups, ad_users)
