@@ -169,7 +169,7 @@ def sync_ad_to_gitlab(ad_groups, gitlab_users):
 
 def action_gitlab_user(user, action):
     if DRY_RUN:
-        print(f"[DRY-RUN] Would block user: {user['email']}")
+        print(f"[DRY-RUN] Would {action} user: {user['email']}")
         return None
     else:
         response = make_request(
