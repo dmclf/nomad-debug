@@ -29,6 +29,7 @@ GITLAB_TOKEN = os.getenv("GITLAB_TOKEN")
 GITLAB_TOKEN_TYPE = os.getenv("GITLAB_TOKEN_TYPE", "PRIVATE-TOKEN")  # ex.. PRIVATE-TOKEN
 GITLAB_URL = os.getenv("GITLAB_URL")  # ex.. https://gitlab.my-ad-domain
 GITLAB_HEADER = {GITLAB_TOKEN_TYPE: GITLAB_TOKEN}
+GITLAB_CREATE_IGNOREUSER = os.getenv("GITLAB_CREATE_IGNOREUSER", "")  # eg... user1@dom,user2@dom .. csv list
 DEFAULT_REQUESTS_TIMEOUT = int(os.getenv("REQUESTS_TIMEOUT", "15"))  # seconds
 DEFAULT_REQUESTS_RETRIES = int(os.getenv("REQUESTS_RETRIES", "3"))
 SANITY_CHECK_COUNT_AD = int(os.getenv("SANITY_CHECK_COUNT_AD", "5"))  # at least expect 5 users in AD
@@ -145,7 +146,7 @@ def make_request(
                 return response
             elif response.status_code == 404 and "user not found" in response.text:
                 return response
-            elif response.status_code != 200:
+            elif response.status_code not in (200, 201):
                 logger.debug(response.status_code, response.text)
             response.raise_for_status()  # Raise error for bad status codes
             return response
@@ -190,6 +191,7 @@ def get_gitlab_users():
 
 def sync_ad_to_gitlab(ad_users, gitlab_users):
     # example usecase, gitlab with OAUTH SSO
+    gitlab_user_emails = {user["email"] for user in gitlab_users}
     for user in gitlab_users:
         # do not block id=1 (root)
         # do not block users with 'bot' in note
@@ -202,7 +204,10 @@ def sync_ad_to_gitlab(ad_users, gitlab_users):
         if user["id"] != 1 and user["email"] in ad_users and "active" not in user["state"]:
             logger.warning(f"✅user is active, unblocking: {user}")
             action_gitlab_user(user, "unblock")
-        # delete_gitlab_user(user)  # Your custom deletion function
+    for user in ad_users:
+        if user not in gitlab_user_emails and user not in GITLAB_CREATE_IGNOREUSER.split(","):
+            logger.warning(f"👤user not on gitlab, creating: {user}")
+            action_gitlab_user(user, "create")
 
 
 def action_gitlab_user(user, action):
@@ -210,18 +215,36 @@ def action_gitlab_user(user, action):
         logger.debug(f"[DRY-RUN] Would {action} user: {user['email']}")
         return None
     else:
-        response = make_request(
-            "post",
-            f"{GITLAB_URL}/api/v4/users/{user['id']}/{action}",
-            headers=GITLAB_HEADER,
-        )
-        if response.status_code == 201:
-            logger.info(f"✅ User {user['email']} successfully {action}'ed.")
+        if "create" in action:
+            response = make_request(
+                "post",
+                f"{GITLAB_URL}/api/v4/users",
+                headers=GITLAB_HEADER,
+                json={
+                    "email": user,
+                    "username": user.split("@")[0],
+                    "name": user.split("@")[0].replace(".", " "),
+                    "password": generate_password(),
+                    "skip_confirmation": True,
+                },
+            )
+        else:
+            response = make_request(
+                "post",
+                f"{GITLAB_URL}/api/v4/users/{user['id']}/{action}",
+                headers=GITLAB_HEADER,
+            )
+        if response.status_code == 201 or response.status_code == 200:
+            if "email" in user:
+                logger.info(f"✅ User {user['email']} successfully {action}'ed.")
+            else:
+                logger.info(f"✅ User {user} successfully {action}'ed.")
         elif response.status_code == 403:
             logger.error("❌ Forbidden: You may not have permission to {action} users.")
         elif response.status_code == 404:
             logger.error("❌ User not found.")
         else:
+            print("Unexpected", response.status_code, response.text)
             logger.critical(f"⚠️ Unexpected error: {response.status_code} - {response.text}")
 
 
@@ -516,6 +539,7 @@ if __name__ == "__main__":
         logger.debug("trying AD<->Gitlab sync")
         sync_ad_to_gitlab(ad_users, get_gitlab_users())
 
+    exit(1)
     logger.debug("trying AD<->Grafana sync")
     if "," in GRAFANA_URL:
         MULTIPLE_GRAFANA_URLS = GRAFANA_URL
