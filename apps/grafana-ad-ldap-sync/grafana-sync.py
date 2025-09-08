@@ -539,7 +539,6 @@ if __name__ == "__main__":
         logger.debug("trying AD<->Gitlab sync")
         sync_ad_to_gitlab(ad_users, get_gitlab_users())
 
-    exit(1)
     logger.debug("trying AD<->Grafana sync")
     if "," in GRAFANA_URL:
         MULTIPLE_GRAFANA_URLS = GRAFANA_URL
