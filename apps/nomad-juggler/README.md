@@ -22,10 +22,10 @@ there might be some possible concerns with putting the token in GET requests, in
 ## 🧪 Usage
 ```bash
 # Run the Flask app
-python app.py
+python nomad-juggler.py
 
 # Or use Gunicorn for production
-gunicorn --bind 0.0.0.0:5000 app:app
+gunicorn --bind 0.0.0.0:5000 nomad-juggler:app
 
 # Or run the docker
 docker run -it --rm -p 5050:5050 -e NOMAD_PORT_juggler=5050 -e NOMAD_ADDR=https://nomad-endpoint.com dmclf/nomad-juggler:0.1a
@@ -47,6 +47,16 @@ and this will
 - invoke a POST to https://nomad-endpoint.com/v1/jobs/parameterized-job?namespace=default
  - with meta SCRIPT=runthis.sh and DAY=1970-01-01
 - whilst providing a header X-Nomad-Token: 00000000-2000-0000-0000-000000000000
+
+### GET /api/{token}/{namespace}/restart/{job}?wait=True
+```bash
+example:
+localhost:5050/api/00000000-2000-0000-0000-000000000000/default/restart/myjob?wait=true
+```
+Sends a restart-request to all allocations and optionally waits until allocations marked as running.
+
+### GET /metrics
+Returns a simple flask prometheus metrics
 
 ### GET /health
 Returns a simple health check response.

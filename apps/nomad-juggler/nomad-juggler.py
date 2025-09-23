@@ -17,17 +17,15 @@ log = logging.getLogger("werkzeug")
 log.setLevel(logging.WARN)  # or logging.CRITICAL to suppress even more
 
 # Get a logging instance
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:%(lineno)d: %(message)s", datefmt="%Y-%m-%d %H:%M:%S %z"
-)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)  # Set the desired logging level
+logger.setLevel(logging.INFO)
+logger.propagate = False
 
 
 class ColorCodes:
     RESET = "\033[0m"
     DEBUG = "\033[90m"  # Grey
-    INFO = "\033[0m"  # Default (no color change)
+    INFO = "\033[10m"  # Default (no color change)
     WARNING = "\033[33m"  # Yellow
     ERROR = "\033[31m"  # Red
     CRITICAL = "\033[31;1m"  # Bold Red
@@ -35,28 +33,28 @@ class ColorCodes:
 
 class ColoredFormatter(logging.Formatter):
     FORMATS = {
-        logging.DEBUG: ColorCodes.DEBUG + "%(levelname)s: %(message)s" + ColorCodes.RESET,
-        logging.INFO: ColorCodes.INFO + "%(levelname)s: %(message)s" + ColorCodes.RESET,
-        logging.WARNING: ColorCodes.WARNING + "%(levelname)s: %(message)s" + ColorCodes.RESET,
-        logging.ERROR: ColorCodes.ERROR + "%(levelname)s: %(message)s" + ColorCodes.RESET,
-        logging.CRITICAL: ColorCodes.CRITICAL + "%(levelname)s: %(message)s" + ColorCodes.RESET,
+        logging.DEBUG: ColorCodes.DEBUG + "%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:%(lineno)d: %(message)s" + ColorCodes.RESET,
+        logging.INFO: ColorCodes.INFO + "%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:%(lineno)d: %(message)s" + ColorCodes.RESET,
+        logging.WARNING: ColorCodes.WARNING
+        + "%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:%(lineno)d: %(message)s"
+        + ColorCodes.RESET,
+        logging.ERROR: ColorCodes.ERROR + "%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:%(lineno)d: %(message)s" + ColorCodes.RESET,
+        logging.CRITICAL: ColorCodes.CRITICAL
+        + "%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:%(lineno)d: %(message)s"
+        + ColorCodes.RESET,
     }
 
     def format(self, record):
         log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt)
+        formatter = logging.Formatter(log_fmt, datefmt="%Y-%m-%d %H:%M:%S %z")
         return formatter.format(record)
 
 
-# Create a stream handler to output to the console
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-# Set the custom formatter for the handler
-ch.setFormatter(ColoredFormatter())
-
-# Add the handler to the logger
-logger.addHandler(ch)
+if not logger.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(ColoredFormatter())
+    logger.addHandler(ch)
 
 NOMAD_ADDR = os.getenv("NOMAD_ADDR", "http://localhost:4646")
 TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "3"))
@@ -84,6 +82,63 @@ def cache_favicon():
 def timestamped_message(message):
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S %z")
     return f"nomad-juggler: {ts} {message}\n"
+
+
+@app.route("/api/<token>/<namespace>/restart/<job>", methods=["GET"])
+def restart_allocations(token, namespace, job):
+    try:
+        headers = {"X-Nomad-Token": token}
+        meta_params = request.args.to_dict()
+        timeout = int(meta_params.pop("timeout", 1200))  # default to 1200 seconds
+        wait = meta_params.get("wait", "false").lower() == "true"
+
+        # Step 1: Get all allocations for the job
+        alloc_url = f"{NOMAD_ADDR}/v1/job/{job}/allocations?namespace={namespace}"
+        response = requests.get(alloc_url, headers=headers)
+        response.raise_for_status()
+        allocations = response.json()
+
+        # Step 2: Filter running allocations
+        running_allocs = [alloc for alloc in allocations if alloc.get("ClientStatus") == "running"]
+        # logger.error(running_allocs)
+
+        restarted = []
+        for alloc in running_allocs:
+            alloc_id = alloc["ID"]
+            restart_url = f"{NOMAD_ADDR}/v1/client/allocation/{alloc_id}/restart?namespace={namespace}"
+            restart_resp = requests.post(restart_url, headers=headers)
+            if restart_resp.status_code == 200:
+                logger.debug(restart_url)
+                restarted.append(alloc_id)
+            else:
+                logger.error(restart_url)
+
+        # Step 3 (Optional): Wait for allocations to become running again
+        if wait:
+            start_time = time.time()
+            while time.time() - start_time < timeout:
+                all_ready = True
+                for alloc_id in restarted:
+                    status_url = f"{NOMAD_ADDR}/v1/allocation/{alloc_id}?namespace={namespace}"
+                    status_resp = requests.get(status_url, headers=headers)
+                    if status_resp.status_code != 200 or status_resp.json().get("ClientStatus") != "running":
+                        all_ready = False
+                        break
+                if all_ready:
+                    break
+                time.sleep(5)
+
+        returnlog = {
+            "running_allocs": len(running_allocs),
+            "restarted_allocations": restarted,
+            "total_restarted": len(restarted),
+            "waited": wait,
+        }
+        logger.info(returnlog)
+        return jsonify(returnlog)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/<token>/<namespace>/dispatch/<job>", methods=["GET"])
@@ -133,7 +188,7 @@ def dispatch_wait_and_tail(token, namespace, job):
                     if "TaskStates" in alloc and alloc["TaskStates"]:
                         task_name = list(alloc["TaskStates"].keys())[0]
                         break
-                    logger.info(f"task_name: {task_name}")
+                    logger.debug(f"task_name: {task_name}")
                 time.sleep(poll_interval)
 
             if not task_name:
@@ -150,7 +205,7 @@ def dispatch_wait_and_tail(token, namespace, job):
 
             while time.time() - start_time < timeout:
                 if cancel_flags.get(task_id):
-                    logger.info("Cancelled by user")
+                    logger.warn("Cancelled by user")
                     yield timestamped_message("Cancelled by user")
                     break
 
@@ -163,7 +218,7 @@ def dispatch_wait_and_tail(token, namespace, job):
                     if "running" not in status:
                         yield timestamped_message(f"[STATUS] {status}")
                     if status.lower() not in ("pending", "running"):
-                        logger.info(f"completed status_url {status_url} ")
+                        logger.debug(f"completed status_url {status_url} ")
                         yield timestamped_message(f"Job completed {status_url}")
                         yield timestamped_message(f"[JOB_UI] {nomad_ui_job_url}")
                         return Response(generate(), mimetype="text/event-stream")
@@ -183,7 +238,7 @@ def dispatch_wait_and_tail(token, namespace, job):
                 stderr_resp = requests.get(f"{stderr_url}&offset={stderr_offset}", headers=headers, timeout=TIMEOUT)
                 logger.debug(f"polling stderr_url {stderr_url} offset:{stderr_offset}")
                 if stderr_resp.status_code == 200 and stderr_resp.text.strip():
-                    logger.info(stderr_resp.text)
+                    logger.debug(stderr_resp.text)
                     stderr_data = stderr_resp.json()
                     if stderr_data.get("Data"):
                         decoded = base64.b64decode(stderr_data["Data"]).decode("utf-8")
