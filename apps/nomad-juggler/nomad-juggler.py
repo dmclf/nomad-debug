@@ -1,4 +1,4 @@
-from flask import Flask, Response, request, jsonify, send_file
+from flask import Flask, Response, request, jsonify, send_file, url_for
 import os
 import logging
 import urllib.parse
@@ -91,6 +91,9 @@ def restart_allocations(token, namespace, job):
         meta_params = request.args.to_dict()
         timeout = int(meta_params.pop("timeout", 1200))  # default to 1200 seconds
         wait = meta_params.get("wait", "false").lower() == "true"
+        dry_run = meta_params.get("dry_run", "false").lower() == "true"
+        verbose = meta_params.get("verbose", "false").lower() == "true"
+        task_name = meta_params.get("task_name")  # optional filter
 
         # Step 1: Get all allocations for the job
         alloc_url = f"{NOMAD_ADDR}/v1/job/{job}/allocations?namespace={namespace}"
@@ -99,22 +102,71 @@ def restart_allocations(token, namespace, job):
         allocations = response.json()
 
         # Step 2: Filter running allocations
-        running_allocs = [alloc for alloc in allocations if alloc.get("ClientStatus") == "running"]
-        # logger.error(running_allocs)
+        running_allocs = []
+        for alloc in allocations:
+            if alloc.get("ClientStatus") != "running":
+                continue
+
+            task_states = alloc.get("TaskStates", {})
+            running_tasks = [task for task, state in task_states.items() if state.get("State") == "running"]
+
+            if running_tasks:
+                alloc["RunningTasks"] = running_tasks  # optional: store for verbose output
+                running_allocs.append(alloc)
+
+        # Step 2.5: If task_name is provided, filter allocations that include that task
+        skipped_allocations = []
+        if task_name:
+            filtered_allocs = []
+            for alloc in running_allocs:
+                task_states = alloc.get("TaskStates", {})
+                if task_name in task_states:
+                    filtered_allocs.append(alloc)
+                else:
+                    skipped_allocations.append(
+                        {
+                            "alloc_id": alloc.get("ID"),
+                            "node_id": alloc.get("NodeID"),
+                            "skipped:node_name": alloc.get("NodeName"),
+                            f"{alloc.get("NodeName")}:task_names": list(task_states.keys()),
+                        }
+                    )
+            running_allocs = filtered_allocs
 
         restarted = []
+        verbose_details = []
+        restart_url = None
+
         for alloc in running_allocs:
             alloc_id = alloc["ID"]
             restart_url = f"{NOMAD_ADDR}/v1/client/allocation/{alloc_id}/restart?namespace={namespace}"
-            restart_resp = requests.post(restart_url, headers=headers)
-            if restart_resp.status_code == 200:
-                logger.debug(restart_url)
+
+            if dry_run:
+                logger.info(f"[DRY RUN] Would restart: {restart_url}")
                 restarted.append(alloc_id)
             else:
-                logger.error(restart_url)
+                restart_resp = requests.post(restart_url, headers=headers)
+                if restart_resp.status_code == 200:
+                    logger.debug(restart_url)
+                    restarted.append(alloc_id)
+                else:
+                    logger.error(restart_url)
+
+            if verbose:
+                verbose_details.append(
+                    {
+                        "alloc_id": alloc_id,
+                        "node_id": alloc.get("NodeID"),
+                        "node_name": alloc.get("NodeName"),
+                        "task_names": list(alloc.get("TaskStates", {}).keys()),
+                        "running_tasks": alloc.get("RunningTasks", []),
+                        "restart_url": restart_url,
+                        "dry_run": dry_run,
+                    }
+                )
 
         # Step 3 (Optional): Wait for allocations to become running again
-        if wait:
+        if wait and not dry_run:
             start_time = time.time()
             while time.time() - start_time < timeout:
                 all_ready = True
@@ -133,7 +185,16 @@ def restart_allocations(token, namespace, job):
             "restarted_allocations": restarted,
             "total_restarted": len(restarted),
             "waited": wait,
+            "filtered_by_task_name": task_name if task_name else "none",
+            "dry_run": dry_run,
         }
+
+        if task_name:
+            returnlog["skipped_due_to_task_name_mismatch"] = skipped_allocations
+
+        if verbose:
+            returnlog["details"] = verbose_details
+
         logger.info(returnlog)
         return jsonify(returnlog)
 
@@ -147,26 +208,41 @@ def dispatch_wait_and_tail(token, namespace, job):
         headers = {"X-Nomad-Token": token}
         meta_params = request.args.to_dict()
         timeout = int(meta_params.pop("timeout", 1200))  # default to 1200 seconds
+        dry_run = meta_params.get("dry_run", "false").lower() == "true"
+        verbose = meta_params.get("verbose", "false").lower() == "true"
         task_id = f"{token}:{namespace}:{job}"
         cancel_flags[task_id] = False
 
-        # exclude 'tail' as special key.
-        data = {"meta": {k: str(v) for k, v in meta_params.items() if k != "tail"}}
-
+        # Prepare dispatch payload
+        data = {"meta": {k: str(v) for k, v in meta_params.items() if k not in ["tail", "dry_run", "verbose"]}}
         dispatch_url = f"{NOMAD_ADDR}/v1/job/{job}/dispatch?namespace={namespace}"
-        logger.info(f"starting {dispatch_url} ")
+
+        if dry_run:
+            logger.info(f"[DRY RUN] Would dispatch job to: {dispatch_url}")
+            return jsonify({"status": "dry_run", "dispatch_url": dispatch_url, "meta": data["meta"]}), 200
+
+        logger.info(f"Dispatching job to: {dispatch_url}")
         response = requests.post(dispatch_url, headers=headers, json=data, timeout=TIMEOUT)
         response.raise_for_status()
 
         if response.status_code != 200:
             return Response(f"Dispatch failed: {response.text}", status=response.status_code)
 
-        if "tail" not in meta_params:
-            return jsonify({"status": "dispatched", "url": dispatch_url}), 200
-
-        job_id = urllib.parse.quote(response.json()["DispatchedJobID"], safe="")
+        dispatched_job_id = response.json()["DispatchedJobID"]
+        job_id = urllib.parse.quote(dispatched_job_id, safe="")
         alloc_url = f"{NOMAD_ADDR}/v1/job/{job_id}/allocations?namespace={namespace}"
         nomad_ui_job_url = f"{NOMAD_ADDR}/ui/jobs/{job_id}@{namespace}"
+
+        if "tail" not in meta_params:
+            result = {
+                "status": "dispatched",
+                "dispatched_job_id": dispatched_job_id,
+                "dispatch_url": dispatch_url,
+                "nomad_ui_job_url": nomad_ui_job_url,
+            }
+            if verbose:
+                result["meta"] = data["meta"]
+            return jsonify(result), 200
 
         def generate():
             timestamped_message(f"[JOB_UI] started {nomad_ui_job_url}")
@@ -175,20 +251,23 @@ def dispatch_wait_and_tail(token, namespace, job):
             stdout_offset = 0
             stderr_offset = 0
 
-            # Wait for allocation
             alloc_id = None
             task_name = None
+            node_id = None
+            node_name = None
+
+            # Wait for allocation
             for _ in range(10):
                 alloc_resp = requests.get(alloc_url, headers=headers, timeout=TIMEOUT)
                 alloc_resp.raise_for_status()
                 if alloc_resp.status_code == 200 and alloc_resp.json():
                     alloc = alloc_resp.json()[0]
                     alloc_id = alloc["ID"]
-                    logger.debug(alloc["TaskStates"])
+                    node_id = alloc.get("NodeID")
+                    node_name = alloc.get("NodeName")
                     if "TaskStates" in alloc and alloc["TaskStates"]:
                         task_name = list(alloc["TaskStates"].keys())[0]
                         break
-                    logger.debug(f"task_name: {task_name}")
                 time.sleep(poll_interval)
 
             if not task_name:
@@ -200,12 +279,17 @@ def dispatch_wait_and_tail(token, namespace, job):
             status_url = f"{NOMAD_ADDR}/v1/job/{job_id}/allocations?namespace={namespace}"
             nomad_ui_alloc_url = f"{NOMAD_ADDR}/ui/allocations/{alloc_id}/{task_name}"
 
-            timestamped_message(f"[ALLOC_UI] started {nomad_ui_alloc_url}")
             yield timestamped_message(f"[ALLOC_UI] started {nomad_ui_alloc_url}")
+
+            if verbose:
+                yield timestamped_message(f"[VERBOSE] Allocation ID: {alloc_id}")
+                yield timestamped_message(f"[VERBOSE] Task Name: {task_name}")
+                yield timestamped_message(f"[VERBOSE] Node ID: {node_id}")
+                yield timestamped_message(f"[VERBOSE] Node Name: {node_name}")
 
             while time.time() - start_time < timeout:
                 if cancel_flags.get(task_id):
-                    logger.warn("Cancelled by user")
+                    logger.warning("Cancelled by user")
                     yield timestamped_message("Cancelled by user")
                     break
 
@@ -213,12 +297,10 @@ def dispatch_wait_and_tail(token, namespace, job):
                 status_resp = requests.get(status_url, headers=headers, timeout=TIMEOUT)
                 status_resp.raise_for_status()
                 if status_resp.status_code == 200:
-                    logger.debug(f"status_url {status_url} ")
                     status = status_resp.json()[0].get("ClientStatus", "")
                     if "running" not in status:
                         yield timestamped_message(f"[STATUS] {status}")
                     if status.lower() not in ("pending", "running"):
-                        logger.debug(f"completed status_url {status_url} ")
                         yield timestamped_message(f"Job completed {status_url}")
                         yield timestamped_message(f"[JOB_UI] {nomad_ui_job_url}")
                         return Response(generate(), mimetype="text/event-stream")
@@ -226,7 +308,6 @@ def dispatch_wait_and_tail(token, namespace, job):
 
                 # Poll stdout
                 stdout_resp = requests.get(f"{stdout_url}&offset={stdout_offset}", headers=headers, timeout=TIMEOUT)
-                logger.debug(f"polling stdout_url {stdout_url} offset:{stdout_offset}")
                 if stdout_resp.status_code == 200 and stdout_resp.text.strip():
                     stdout_data = stdout_resp.json()
                     if stdout_data.get("Data"):
@@ -236,9 +317,7 @@ def dispatch_wait_and_tail(token, namespace, job):
 
                 # Poll stderr
                 stderr_resp = requests.get(f"{stderr_url}&offset={stderr_offset}", headers=headers, timeout=TIMEOUT)
-                logger.debug(f"polling stderr_url {stderr_url} offset:{stderr_offset}")
                 if stderr_resp.status_code == 200 and stderr_resp.text.strip():
-                    logger.debug(stderr_resp.text)
                     stderr_data = stderr_resp.json()
                     if stderr_data.get("Data"):
                         decoded = base64.b64decode(stderr_data["Data"]).decode("utf-8")
@@ -251,6 +330,7 @@ def dispatch_wait_and_tail(token, namespace, job):
             cancel_flags.pop(task_id, None)
 
         return Response(generate(), mimetype="text/event-stream")
+
     except requests.exceptions.ConnectionError as e:
         return jsonify({"error": f"Connection error: {e}"}), 503
     except requests.exceptions.Timeout as e:
@@ -361,10 +441,40 @@ def serve_favicon():
 # Route to list all available endpoints
 @app.route("/routes")
 def list_routes():
+    example_values = {"token": "00000000-2000-0000-0000-000000000000", "namespace": "default", "job": "job42"}
+
+    descriptions = {
+        "dispatch_wait_and_tail": "Dispatches a job and waits for its output stream.",
+        "cancel_job_stream": "Cancels a running job stream.",
+        "restart_allocations": "Restarts allocations for a given token and namespace.",
+        "health": "Health check endpoint.",
+        "home": "Home page.",
+        "about": "About page.",
+        "serve_favicon": "Serves the favicon.",
+        "list_routes": "Lists all available routes.",
+        "prometheus_metrics": "Exposes Prometheus metrics.",
+    }
+
     output = []
     for rule in app.url_map.iter_rules():
-        methods = ",".join(rule.methods)
-        output.append(f"{rule.endpoint}: {rule.rule} [{methods}]")
+        methods = ",".join(sorted(rule.methods - {"HEAD", "OPTIONS"}))
+        endpoint = rule.endpoint
+        url = rule.rule
+
+        # Check if the route has dynamic arguments
+        has_args = bool(rule.arguments)
+
+        # Build example URL accordingly
+        try:
+            if has_args:
+                example_url = url_for(endpoint, **example_values)
+            else:
+                example_url = url_for(endpoint)
+        except Exception:
+            example_url = url  # fallback to raw rule
+
+        description = descriptions.get(endpoint, "No description available.")
+        output.append(f"<strong>{endpoint}</strong>: {example_url} [{methods}]<br>" f"Description: {description}<br><br>")
     return "<br>".join(output)
 
 
