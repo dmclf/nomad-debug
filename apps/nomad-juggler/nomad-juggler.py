@@ -10,7 +10,6 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
 metrics = PrometheusMetrics(app, group_by="endpoint")
-poll_interval = 2
 
 # Suppress Werkzeug request logs
 log = logging.getLogger("werkzeug")
@@ -58,6 +57,8 @@ if not logger.handlers:
 
 NOMAD_ADDR = os.getenv("NOMAD_ADDR", "http://localhost:4646")
 TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "3"))
+POLL_INTERVAL = int(os.getenv("REQUEST_TIMEOUT", "5"))
+
 # yes, remote fetching favicon can be a startup issue.
 FAVICON_URL = os.getenv("FAVICON_URL", "https://github.com/hashicorp/nomad/raw/refs/heads/main/ui/public/favicon.ico")
 FAVICON_PATH = "cached_favicon.ico"
@@ -74,7 +75,9 @@ def cache_favicon():
             response.raise_for_status()
             with open(FAVICON_PATH, "wb") as f:
                 f.write(response.content)
-            logger.info("Favicon downloaded and cached.")
+            logger.info(
+                f"Favicon downloaded {FAVICON_URL} and cached:{FAVICON_PATH} status_code:{response.status_code} size:{len(response.content)}"
+            )
         except Exception as e:
             logger.error(f"Failed to download favicon ({FAVICON_URL}): {e}")
 
@@ -267,7 +270,7 @@ def dispatch_wait_and_tail(token, namespace, job):
                     if "TaskStates" in alloc and alloc["TaskStates"]:
                         task_name = list(alloc["TaskStates"].keys())[0]
                         break
-                time.sleep(poll_interval)
+                time.sleep(POLL_INTERVAL)
 
             if not task_name:
                 yield timestamped_message("Failed to get allocation")
@@ -323,7 +326,7 @@ def dispatch_wait_and_tail(token, namespace, job):
                         yield timestamped_message(f"[STDERR container-logs] {decoded}")
                     stderr_offset = stderr_data.get("Offset", stderr_offset)
 
-                time.sleep(poll_interval)
+                time.sleep(POLL_INTERVAL)
 
             yield timestamped_message("Timeout reached or job finished")
             cancel_flags.pop(task_id, None)
