@@ -125,10 +125,10 @@ def restart_allocations(token, namespace, job):
                 else:
                     skipped_allocations.append(
                         {
-                            "alloc_id": alloc.get("ID"),
-                            "node_id": alloc.get("NodeID"),
-                            "skipped:node_name": alloc.get("NodeName"),
-                            f"{alloc.get("NodeName")}:task_names": list(task_states.keys()),
+                            # "alloc_id": alloc.get("ID"),
+                            # "node_id": alloc.get("NodeID"),
+                            "node_name": alloc.get("NodeName"),
+                            "task_names": list(task_states.keys()),
                         }
                     )
             running_allocs = filtered_allocs
@@ -189,11 +189,10 @@ def restart_allocations(token, namespace, job):
             "dry_run": dry_run,
         }
 
-        if task_name:
-            returnlog["skipped_due_to_task_name_mismatch"] = skipped_allocations
-
         if verbose:
             returnlog["details"] = verbose_details
+            if task_name:
+                returnlog["skipped_due_to_task_name_mismatch"] = skipped_allocations
 
         logger.info(returnlog)
         return jsonify(returnlog)
