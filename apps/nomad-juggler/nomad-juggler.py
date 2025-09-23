@@ -6,8 +6,10 @@ import requests
 import time
 import base64
 from datetime import datetime
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app, group_by="endpoint")
 poll_interval = 2
 
 # Suppress Werkzeug request logs
@@ -174,7 +176,7 @@ def dispatch_wait_and_tail(token, namespace, job):
                     stdout_data = stdout_resp.json()
                     if stdout_data.get("Data"):
                         decoded = base64.b64decode(stdout_data["Data"]).decode("utf-8")
-                        yield timestamped_message(f"nomad-juggler container-logs [STDOUT] {decoded}")
+                        yield timestamped_message(f"[STDOUT container-logs] {decoded}")
                     stdout_offset = stdout_data.get("Offset", stdout_offset)
 
                 # Poll stderr
@@ -185,7 +187,7 @@ def dispatch_wait_and_tail(token, namespace, job):
                     stderr_data = stderr_resp.json()
                     if stderr_data.get("Data"):
                         decoded = base64.b64decode(stderr_data["Data"]).decode("utf-8")
-                        yield timestamped_message(f"nomad-juggler container-logs [STDERR] {decoded}")
+                        yield timestamped_message(f"[STDERR container-logs] {decoded}")
                     stderr_offset = stderr_data.get("Offset", stderr_offset)
 
                 time.sleep(poll_interval)
