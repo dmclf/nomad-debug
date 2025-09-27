@@ -30,6 +30,8 @@ GITLAB_TOKEN_TYPE = os.getenv("GITLAB_TOKEN_TYPE", "PRIVATE-TOKEN")  # ex.. PRIV
 GITLAB_URL = os.getenv("GITLAB_URL")  # ex.. https://gitlab.my-ad-domain
 GITLAB_HEADER = {GITLAB_TOKEN_TYPE: GITLAB_TOKEN}
 GITLAB_CREATE_IGNOREUSER = os.getenv("GITLAB_CREATE_IGNOREUSER", "")  # eg... user1@dom,user2@dom .. csv list
+GITLAB_REMOVE_BLOCKED = os.getenv("GITLAB_REMOVE_BLOCKED", False)
+GITLAB_ENSURE_GROUP = os.getenv("GITLAB_ENSURE_GROUP", False)  # eg.... all-users-group
 DEFAULT_REQUESTS_TIMEOUT = int(os.getenv("REQUESTS_TIMEOUT", "15"))  # seconds
 DEFAULT_REQUESTS_RETRIES = int(os.getenv("REQUESTS_RETRIES", "3"))
 SANITY_CHECK_COUNT_AD = int(os.getenv("SANITY_CHECK_COUNT_AD", "5"))  # at least expect 5 users in AD
@@ -142,12 +144,12 @@ def make_request(
                 response = requests.delete(url, timeout=timeout, **kwargs)
 
             if response.status_code == 400 and "already added" in response.text:
-                logger.debug(response.status_code, response.text)
+                logger.debug(f"Status code: {response.status_code}, Response: {response.text}")
                 return response
             elif response.status_code == 404 and "user not found" in response.text:
                 return response
             elif response.status_code not in (200, 201):
-                logger.debug(response.status_code, response.text)
+                logger.debug(f"Status code: {response.status_code}, Response: {response.text}")
             response.raise_for_status()  # Raise error for bad status codes
             return response
 
@@ -199,7 +201,6 @@ def sync_ad_to_gitlab(ad_users, gitlab_users):
         if user["id"] != 1 and user["email"] not in ad_users and "active" in user["state"] and "bot" not in user["note"]:
             logger.warning(f'❌user is not active, blocking: {user['email']}')
             action_gitlab_user(user, "block")
-
         # re-activate users if they were blocked but should be active.:
         if user["id"] != 1 and user["email"] in ad_users and "active" not in user["state"]:
             logger.warning(f"✅user is active, unblocking: {user}")
@@ -208,6 +209,8 @@ def sync_ad_to_gitlab(ad_users, gitlab_users):
         if user not in gitlab_user_emails and user not in GITLAB_CREATE_IGNOREUSER.split(","):
             logger.warning(f"👤user not on gitlab, creating: {user}")
             action_gitlab_user(user, "create")
+    if GITLAB_ENSURE_GROUP:
+        gitlab_ensure_group_membership(gitlab_users)
 
 
 def action_gitlab_user(user, action):
@@ -246,6 +249,85 @@ def action_gitlab_user(user, action):
         else:
             print("Unexpected", response.status_code, response.text)
             logger.critical(f"⚠️ Unexpected error: {response.status_code} - {response.text}")
+
+
+def gitlab_ensure_group_membership(gitlab_users):
+    group_name = GITLAB_ENSURE_GROUP
+    group_id = gitlab_get_group_id(group_name)
+    if not group_id:
+        logger.error(f"❌ GitLab group '{group_name}' not found.")
+        return
+
+    current_members = gitlab_get_group_members(group_id)
+    current_member_ids = {member["id"] for member in current_members}
+
+    for user in gitlab_users:
+        # if user not active, and its a current member, and GITLAB_REMOVE_BLOCKED, delete user from group
+        if "active" not in user["state"]:
+            if GITLAB_REMOVE_BLOCKED and user["id"] in current_member_ids:
+                logger.debug(f"👥 removing GitLab user {user['email']} {user['state']} from {group_name}")
+                gitlab_delete_user_from_group(group_id, user["id"])
+            continue
+        if user in GITLAB_CREATE_IGNOREUSER.split(","):
+            logger.debug(f"👥 ignoring GitLab user {user['email']} -> in GITLAB_CREATE_IGNOREUSER")
+            continue
+        if user["id"] not in current_member_ids:
+            logger.warning(f"👥 Adding GitLab user {user['email']} to group '{group_name}'")
+            gitlab_add_user_to_group(group_id, user["id"])
+
+
+def gitlab_get_group_id(group_name):
+    response = make_request("get", f"{GITLAB_URL}/api/v4/groups", headers=GITLAB_HEADER, params={"search": group_name})
+
+    # Ensure response is parsed as JSON
+    if hasattr(response, "json"):
+        response_data = response.json()
+    else:
+        response_data = response  # assume it's already a list of dicts
+
+    for group in response_data:
+        if isinstance(group, dict) and group.get("name") == group_name:
+            return group["id"]
+    return None
+
+
+def gitlab_get_group_members(group_id):
+    return make_request("get", f"{GITLAB_URL}/api/v4/groups/{group_id}/members", headers=GITLAB_HEADER, paginated=True)
+
+
+def gitlab_delete_user_from_group(group_id, user_id):
+    if DRY_RUN:
+        logger.debug(f"[DRY-RUN] Would delete GitLab user {user_id} from group {group_id}")
+        return
+        # DELETE /groups/:id/members/:user_id
+    response = make_request(
+        "DELETE",
+        f"{GITLAB_URL}/api/v4/groups/{group_id}/members/{user_id}",
+        headers=GITLAB_HEADER,
+    )
+    if response.ok:
+        logger.info(f"✅ GitLab user {user_id} deleted from group {group_id}")
+    else:
+        logger.error(f"❌ Failed to delete GitLab user {user_id} from group {group_id}: {response.text}")
+
+
+def gitlab_add_user_to_group(group_id, user_id):
+    if DRY_RUN:
+        logger.debug(f"[DRY-RUN] Would add GitLab user {user_id} to group {group_id}")
+        return
+    response = make_request(
+        "post",
+        f"{GITLAB_URL}/api/v4/groups/{group_id}/members",
+        headers=GITLAB_HEADER,
+        json={
+            "user_id": user_id,
+            "access_level": 30,  # Developer access
+        },
+    )
+    if response.ok:
+        logger.info(f"✅ GitLab user {user_id} added to group {group_id}")
+    else:
+        logger.error(f"❌ Failed to add GitLab user {user_id} to group {group_id}: {response.text}")
 
 
 def get_ad_groups_and_users():
