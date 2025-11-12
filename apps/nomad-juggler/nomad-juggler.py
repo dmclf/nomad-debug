@@ -246,92 +246,95 @@ def dispatch_wait_and_tail(token, namespace, job):
                 result["meta"] = data["meta"]
             return jsonify(result), 200
 
-        def generate():
-            timestamped_message(f"[JOB_UI] started {nomad_ui_job_url}")
-            yield timestamped_message(f"[JOB_UI] started {nomad_ui_job_url}")
-            start_time = time.time()
-            stdout_offset = 0
-            stderr_offset = 0
+        # Blocking tail: wait for allocation + job completion, then return final status.
+        # This blocks the request until the job finishes or timeout is reached.
+        # Wait for allocation
+        alloc_id = None
+        task_name = None
+        for _ in range(10):
+            alloc_resp = requests.get(alloc_url, headers=headers, timeout=TIMEOUT)
+            alloc_resp.raise_for_status()
+            if alloc_resp.status_code == 200 and alloc_resp.json():
+                alloc = alloc_resp.json()[0]
+                alloc_id = alloc["ID"]
+                if "TaskStates" in alloc and alloc["TaskStates"]:
+                    task_name = list(alloc["TaskStates"].keys())[0]
+                    break
+            time.sleep(POLL_INTERVAL)
 
-            alloc_id = None
-            task_name = None
-            node_id = None
-            node_name = None
+        if not task_name:
+            return jsonify({"error": "Failed to get allocation"}), 504
 
-            # Wait for allocation
-            for _ in range(10):
-                alloc_resp = requests.get(alloc_url, headers=headers, timeout=TIMEOUT)
-                alloc_resp.raise_for_status()
-                if alloc_resp.status_code == 200 and alloc_resp.json():
-                    alloc = alloc_resp.json()[0]
-                    alloc_id = alloc["ID"]
-                    node_id = alloc.get("NodeID")
-                    node_name = alloc.get("NodeName")
-                    if "TaskStates" in alloc and alloc["TaskStates"]:
-                        task_name = list(alloc["TaskStates"].keys())[0]
-                        break
-                time.sleep(POLL_INTERVAL)
+        status_url = f"{NOMAD_ADDR}/v1/job/{job_id}/allocations?namespace={namespace}"
+        start_time = time.time()
+        final_status = None
 
-            if not task_name:
-                yield timestamped_message("Failed to get allocation")
-                return
+        while time.time() - start_time < timeout:
+            if cancel_flags.get(task_id):
+                cancel_flags.pop(task_id, None)
+                return jsonify({"status": "cancelled", "task_id": task_id}), 200
 
-            stdout_url = f"{NOMAD_ADDR}/v1/client/fs/logs/{alloc_id}?namespace={namespace}&task={task_name}&type=stdout"
-            stderr_url = f"{NOMAD_ADDR}/v1/client/fs/logs/{alloc_id}?namespace={namespace}&task={task_name}&type=stderr"
-            status_url = f"{NOMAD_ADDR}/v1/job/{job_id}/allocations?namespace={namespace}"
-            nomad_ui_alloc_url = f"{NOMAD_ADDR}/ui/allocations/{alloc_id}/{task_name}"
-
-            yield timestamped_message(f"[ALLOC_UI] started {nomad_ui_alloc_url}")
-
-            if verbose:
-                yield timestamped_message(f"[VERBOSE] Allocation ID: {alloc_id}")
-                yield timestamped_message(f"[VERBOSE] Task Name: {task_name}")
-                yield timestamped_message(f"[VERBOSE] Node ID: {node_id}")
-                yield timestamped_message(f"[VERBOSE] Node Name: {node_name}")
-
-            while time.time() - start_time < timeout:
-                if cancel_flags.get(task_id):
-                    logger.warning("Cancelled by user")
-                    yield timestamped_message("Cancelled by user")
+            status_resp = requests.get(status_url, headers=headers, timeout=TIMEOUT)
+            status_resp.raise_for_status()
+            if status_resp.status_code == 200 and status_resp.json():
+                final_status = status_resp.json()[0].get("ClientStatus", "")
+                if final_status.lower() not in ("pending", "running"):
                     break
 
-                # Check job status
-                status_resp = requests.get(status_url, headers=headers, timeout=TIMEOUT)
-                status_resp.raise_for_status()
-                if status_resp.status_code == 200:
-                    status = status_resp.json()[0].get("ClientStatus", "")
-                    if "running" not in status:
-                        yield timestamped_message(f"[STATUS] {status}")
-                    if status.lower() not in ("pending", "running"):
-                        yield timestamped_message(f"Job completed {status_url}")
-                        yield timestamped_message(f"[JOB_UI] {nomad_ui_job_url}")
-                        return Response(generate(), mimetype="text/event-stream")
-                        break
+            time.sleep(POLL_INTERVAL)
 
-                # Poll stdout
-                stdout_resp = requests.get(f"{stdout_url}&offset={stdout_offset}", headers=headers, timeout=TIMEOUT)
-                if stdout_resp.status_code == 200 and stdout_resp.text.strip():
-                    stdout_data = stdout_resp.json()
-                    if stdout_data.get("Data"):
-                        decoded = base64.b64decode(stdout_data["Data"]).decode("utf-8")
-                        yield timestamped_message(f"[STDOUT container-logs] {decoded}")
-                    stdout_offset = stdout_data.get("Offset", stdout_offset)
+        if not final_status:
+            return jsonify({"error": "No status available"}), 504
 
-                # Poll stderr
-                stderr_resp = requests.get(f"{stderr_url}&offset={stderr_offset}", headers=headers, timeout=TIMEOUT)
-                if stderr_resp.status_code == 200 and stderr_resp.text.strip():
-                    stderr_data = stderr_resp.json()
-                    if stderr_data.get("Data"):
-                        decoded = base64.b64decode(stderr_data["Data"]).decode("utf-8")
-                        yield timestamped_message(f"[STDERR container-logs] {decoded}")
-                    stderr_offset = stderr_data.get("Offset", stderr_offset)
+        if final_status.lower() == "failed":
+            # Try to collect last available stdout/stderr from the allocation
+            stdout_log = ""
+            stderr_log = ""
+            try:
+                stdout_url = f"{NOMAD_ADDR}/v1/client/fs/logs/{alloc_id}?namespace={namespace}&task={task_name}&type=stdout&offset=0"
+                stderr_url = f"{NOMAD_ADDR}/v1/client/fs/logs/{alloc_id}?namespace={namespace}&task={task_name}&type=stderr&offset=0"
 
-                time.sleep(POLL_INTERVAL)
+                so = requests.get(stdout_url, headers=headers, timeout=TIMEOUT)
+                if so.status_code == 200 and so.text.strip():
+                    so_j = so.json()
+                    if so_j.get("Data"):
+                        stdout_log = base64.b64decode(so_j["Data"]).decode("utf-8", errors="replace")
 
-            yield timestamped_message("Timeout reached or job finished")
-            cancel_flags.pop(task_id, None)
+                se = requests.get(stderr_url, headers=headers, timeout=TIMEOUT)
+                if se.status_code == 200 and se.text.strip():
+                    se_j = se.json()
+                    if se_j.get("Data"):
+                        stderr_log = base64.b64decode(se_j["Data"]).decode("utf-8", errors="replace")
+            except Exception as e:
+                logger.debug(f"Failed to fetch logs for failed job: {e}")
 
-        return Response(generate(), mimetype="text/event-stream")
+            # Truncate logs to a reasonable size
+            maxlen = 10000
+            if len(stdout_log) > maxlen:
+                stdout_log = stdout_log[-maxlen:]
+            if len(stderr_log) > maxlen:
+                stderr_log = stderr_log[-maxlen:]
+
+            return (
+                jsonify(
+                    {
+                        "error": "Nomad Job Failed",
+                        "nomad_ui_job_url": nomad_ui_job_url,
+                        "stdout": stdout_log,
+                        "stderr": stderr_log,
+                    }
+                ),
+                418,
+            )
+
+        result = {
+            "status": "completed",
+            "client_status": final_status,
+            "nomad_ui_job_url": nomad_ui_job_url,
+        }
+        if verbose:
+            result["meta"] = data["meta"]
+        return jsonify(result), 200
 
     except requests.exceptions.ConnectionError as e:
         return jsonify({"error": f"Connection error: {e}"}), 503
